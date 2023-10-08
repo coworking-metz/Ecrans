@@ -2,7 +2,7 @@
     <hr>
     <article class="media">
         <figure class="media-left">
-            <p class="image is-64x64">
+            <p class="image">
                 <img :src="media.thumbnail" :alt="media.file.name">
             </p>
         </figure>
@@ -42,5 +42,11 @@ async function deleteMedia() {
 <style scoped>
 figure {
     margin-bottom: 0 !important
+}
+.image {
+    display: block;
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
 }
 </style>
