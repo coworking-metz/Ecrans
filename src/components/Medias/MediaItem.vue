@@ -43,7 +43,7 @@ async function deleteMedia() {
 figure {
     margin-bottom: 0 !important
 }
-.image {
+.image img{
     display: block;
     width: 64px;
     height: 64px;
