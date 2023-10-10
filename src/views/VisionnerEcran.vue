@@ -49,19 +49,21 @@ onMounted(() => {
     data.ecran = response;
     pageTitle('Visionner', data.ecran.name);
     // await loadSlides();
+    window.bus.emit('loadSlides');
     avancer();
     handleShortcuts()
 });
 
 function avancer(delta = 1) {
     data.currentSlide = slides.value[data.index];
+    console.log(slides.value, data.index)
     data.index += delta;
     if (data.index >= slides.value.length) {
         data.index = 0;
         // loadSlides();
     }
 
-    const duration = data.currentSlide.duration * 1000;
+    const duration = (data.currentSlide?.duration || 0) * 1000;
     timeout = setTimeout(avancer, duration);
 }
 

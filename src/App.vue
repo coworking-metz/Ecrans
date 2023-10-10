@@ -12,7 +12,6 @@ const mediasStore = useMediasStore();
 const slidesStore = useSlidesStore();
 
 function start() {
-  console.log('start')
   ecransStore.fetchEcrans();
   slidesStore.fetchLiens();
   slidesStore.fetchSlides();

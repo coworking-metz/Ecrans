@@ -17,7 +17,9 @@ const router = useRouter();
 const iframe = ref(null);
 
 window.bus.on('updateSlidePreview', () => {
-  iframe.value.contentWindow.location.reload();
+  if (iframe.value) {
+    iframe.value.contentWindow.location.reload();
+  }
 });
 
 const src = computed(() => {
@@ -97,7 +99,7 @@ const src = computed(() => {
   position: absolute;
   display: block;
   background: #2e2e2e;
-  width: calc(100% - (234px - 173px));
+  width: calc(100% - 16px);
   height: calc(100% - 16px);
   top: 8px;
   left: 8px;
@@ -144,6 +146,7 @@ const src = computed(() => {
   height: 82px;
   top: 8px;
   left: calc(100% - (234px - 189px));
+  display: none;
 }
 
 #vintage-tv .controls-1:before {
@@ -194,7 +197,7 @@ const src = computed(() => {
   height: 57px;
   top: 98px;
   left: calc(100% - (234px - 189px));
-  display: none ;
+  display: none;
 }
 
 #vintage-tv .controls-2:before {

@@ -1,21 +1,26 @@
 <template>
-    <div :style="'background:' + props.slide.meta.backgroundColor">
+    <template v-if="props.slide.meta">
+        <div :style="'background:' + props.slide.meta.backgroundColor">
 
-        <img :src="props.slide.meta.image"
-            :style="'object-fit:' + props.slide.meta.fit + ';opacity:' + props.slide.meta.opacity">
+            <img :src="props.slide.meta.image"
+                :style="'object-fit:' + props.slide.meta.fit + ';opacity:' + props.slide.meta.opacity">
 
-        <div class="contenu">
-            <div class="image"><img :src="props.slide.meta.imagePrincipale"></div>
-            <div class="texte" v-html="texte" :style="'color:' + props.slide.meta.texteColor"></div>
+            <div class="contenu">
+                <div class="image"><img :src="props.slide.meta.imagePrincipale"></div>
+                <div class="texte" :style="'color:' + props.slide.meta.color">
+                    <h1>{{ props.slide.meta.titre }}</h1>
+                    <p v-html="texte"></p>
+                </div>
+            </div>
         </div>
-    </div>
+    </template>
 </template>
 <script setup>
 import { computed, ref } from 'vue'
 const props = defineProps(['slide'])
 
 const texte = computed(() => {
-    return props.slide.meta.textePrincipal.replaceAll('\n','<br>');
+    return props.slide.meta.texte.replaceAll('\n', '<br>');
 })
 
 </script>
@@ -38,7 +43,7 @@ div>img {
     position: absolute;
     z-index: 1;
     display: flex;
-    gap:10vh;
+    gap: 10vh;
     flex-direction: column;
     max-width: 60vw;
     left: 50%;
@@ -46,12 +51,25 @@ div>img {
 }
 
 .texte {
+    display: flex;
+    flex-direction: column;
+    gap: 5vh;
     text-align: center;
-    font-family: 'Arial black';
-    font-size: 5vw;
+}
+
+.texte p {
+    font-family: 'evelethclean_thin', 'Arial';
+    font-size: 2.5vw;
+    line-height: 1.1;
+}
+
+.texte h1 {
+    font-family: 'evelethclean_regular', 'Arial black';
+    font-size: 4vw;
     line-height: 1;
 }
-.image > img{
+
+.image>img {
     width: 100%;
     height: 100%;
     object-fit: contain;

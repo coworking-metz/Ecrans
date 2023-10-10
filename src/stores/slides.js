@@ -16,10 +16,20 @@ export const useSlidesStore = defineStore("slides", {
     ],
   }),
   actions: {
+    getLiens(slideId) {
+      const ecransStore = useEcransStore();
+      let out = [];
+      for (let lien of this.liens) {
+        if (lien.slide_id == slideId) {
+          out.push(lien);
+        }
+      }
+
+      return out;
+    },
     async getEcrans(slideId) {
       const ecransStore = useEcransStore();
       let out = [];
-      await this.fetchLiens(true);
       for (let lien of this.liens) {
         if (lien.slide_id == slideId) {
           out.push(await ecransStore.fetchEcran(lien.ecran_id));

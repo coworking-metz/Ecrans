@@ -9,7 +9,8 @@
             <nav class="level is-mobile">
                 <div class="level-left">
                     <router-link :to="{ name: 'slide', params: { id: slide.id } }">{{ slide.name
-                    }}</router-link>&nbsp;<small class="tag">{{ type }}</small>&nbsp;<strong>{{slide.duration}} secondes</strong>&nbsp;
+                    }}</router-link>&nbsp;<small class="tag">{{ type }}</small>&nbsp;<strong>{{ slide.duration }}
+                        secondes</strong>&nbsp;
                     <small>{{ formatDateToFrench(slide.created_at) }}</small>
                 </div>
                 <div class="level-right">
@@ -28,16 +29,28 @@
                     </a>
                 </div>
             </nav>
+            <div><router-link :to="{ name: 'ecran-slides', params: { id: ecran.id } }" v-for="ecran in ecrans"
+                    class="tag is-primary is-light">{{ ecran.name }}</router-link></div>
         </div>
     </article>
 </template>
 <script setup>
 import { formatDateToFrench } from '@/utils'
+import { useSlidesStore } from '@/stores/slides'
+const slidesStore = useSlidesStore();
 
-import { computed } from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 import supabase from "@/supabase";
 
 const props = defineProps(['slide'])
+
+
+const ecrans = ref([]);
+
+
+watchEffect(async () => {
+    ecrans.value = await slidesStore.getEcrans(props.slide.id);
+});
 
 const type = computed(() => {
     if (!props.slide.type) return '';
