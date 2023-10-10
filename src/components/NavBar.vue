@@ -27,13 +27,13 @@ function toggleNavBar() {
 
         <div class="navbar-menu" :class="{ 'is-active': data.ouvert }">
             <div class="navbar-start">
-                <router-link class="navbar-item" to="/" exact-active-class="is-active">
+                <router-link class="navbar-item" to="/">
                     Ecrans
                 </router-link>
-                <router-link class="navbar-item" to="/slides" exact-active-class="is-active">
+                <router-link class="navbar-item" to="/slides">
                     Slides
                 </router-link>
-                <router-link class="navbar-item" to="/medias" exact-active-class="is-active">
+                <router-link class="navbar-item" to="/medias">
                     Medias
                 </router-link>
             </div>

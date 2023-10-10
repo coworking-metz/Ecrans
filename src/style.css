@@ -1,2 +1,26 @@
-span[class] {
+span[class] {}
+
+
+.control:has([type="color"]) {
+    display: flex;
+}
+
+.control:has([type="color"]) [type="color"] {
+    width: 64px;
+    cursor: pointer;
+    padding: 0;
+}
+
+
+.validation-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: white;
+    z-index: 9999;
 }

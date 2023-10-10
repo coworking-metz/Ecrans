@@ -1,7 +1,8 @@
 <template>
     <form ref="form" @submit.prevent="mediaUpload" enctype="multipart/form-data">
         <div class="file">
-            <label class="file-label">
+            <button v-if="data.isLoading" class="button is-loading">Ajouter une ou plusieurs images</button>
+            <label v-else class="file-label">
                 <input class="file-input" type="file" multiple="true" ref="mediaFile" @input="mediaUpload">
                 <span class="file-cta">
                     <span class="file-icon">
@@ -16,18 +17,28 @@
     </form>
 </template>
 <script setup>
+import { useMediasStore } from '@/stores/medias'
 import supabase from "@/supabase";
-import { ref, onMounted } from 'vue'
+import { ref, reactive } from 'vue'
+const props = defineProps(['name'])
+const mediasStore = useMediasStore();
+
 const validImageTypes = ['image/webp', 'image/svg+xml', 'image/jpeg', 'image/png', 'image/gif', 'image/avif'];
 const thumbnailsImageTypes = ['image/webp', 'image/jpeg', 'image/png', 'image/gif', 'image/avif'];
 const form = ref(null);
 const mediaFile = ref(null);
+
+const data = reactive({
+    isLoading: false
+})
 function formSubmit() {
 
     form.value.submit();
 }
 async function mediaUpload() {
-    for (const file of mediaFile.value.files) {
+    const files = mediaFile.value.files;
+    data.isLoading = true;
+    for (const file of files) {
         if (!validImageTypes.includes(file.type)) {
             return alert(`Format de fichier non autorisé pour ${file.name}`);
         }
@@ -38,8 +49,16 @@ async function mediaUpload() {
         if (thumbnailsImageTypes.includes(file.type)) {
             uploadThumbnail(file);
         }
-        window.bus.emit('loadMedias')
+        await mediasStore.fetchMedias();
+        console.log(mediasStore.medias)
+        for (const idx in mediasStore.medias) {
+            const media = mediasStore.medias[idx];
+            if (media.url.endsWith(data.path)) {
+                window.bus.emit('selectMedia', { id: media.file.id, name: props.name })
+            }
+        }
     }
+    data.isLoading = false;
 }
 function uploadThumbnail(file, width = 150) {
     const image = new Image();

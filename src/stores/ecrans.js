@@ -5,41 +5,35 @@ import supabase from "@/supabase";
 export const useEcransStore = defineStore("ecrans", {
   state: () => ({
     ecrans: [],
-    slides: [],
   }),
   actions: {
-    async fetchEcrans(slug) {
+    async fetchEcrans() {
       const { data, error } = await supabase.from("ecrans").select("*");
 
       if (!error) {
         this.ecrans = data;
       }
     },
-    async fetchSlides() {
-      const { data, error } = await supabase.from("slides").select("*");
-
-      if (!error) {
-        this.slides = data;
-      }
-    },
-    async fetchSlide(id) {
+    async ecranSlides(id) {
       const { data, error } = await supabase
-        .from("slides")
+        .from("liens_ecrans_slides")
         .select("*")
-        .eq("id", id);
+        .eq("ecranid", id);
 
-      if (!error) {
-        return data;
-      }
+      const ids = data.map((lien) => lien.slideid);
+      const response = await supabase.from("slides").select("*").in("id", ids);
+      return response.data;
     },
     async fetchEcran(id) {
-      const { data, error } = await supabase
-        .from("ecrans")
-        .select("*")
-        .eq("id", id);
-
+      let ret;
+      if (typeof id == "string") {
+        ret = supabase.from("ecrans").select("*").eq("slug", id);
+      } else {
+        ret = supabase.from("ecrans").select("*").eq("id", id);
+      }
+      const { data, error } = await ret;
       if (!error) {
-        return data;
+        return data[0];
       }
     },
   },

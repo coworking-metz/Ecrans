@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Ecrans from "@/views/Ecrans.vue";
 
 const router = createRouter({
+  linkActiveClass: "is-active",
   history: createWebHistory(),
   routes: [
     {
@@ -15,11 +16,29 @@ const router = createRouter({
       component: () => import("@/views/Ecran.vue"),
     },
     {
+      name: "ecran-slides",
+      path: "/ecran/:id/slides",
+      component: () => import("@/views/Slides.vue"),
+    },
+    {
+      name: "visionner",
+      path: "/visionner/:slug",
+      component: () => import("@/views/Visionner.vue"),
+    },
+    {
+      meta: { title: "Slides" },
       name: "slides",
       path: "/slides",
       component: () => import("@/views/Slides.vue"),
     },
     {
+      meta: { title: "Corbeille - Slides" },
+      name: "slides-trash",
+      path: "/slides/trash",
+      component: () => import("@/views/Slides.vue"),
+    },
+    {
+      meta: { title: "Medias" },
       name: "medias",
       path: "/medias",
       component: () => import("@/views/Medias.vue"),

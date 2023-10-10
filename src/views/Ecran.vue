@@ -1,4 +1,6 @@
-<template></template>
+<template>
+    {{ data.ecran.slug }}
+</template>
 <script setup>
 import { onMounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'
@@ -15,7 +17,7 @@ const ecransStore = useEcransStore();
 
 onMounted(() => {
     ecransStore.fetchEcran(route.params.id).then(response => {
-        data.ecran = response[0]
+        data.ecran = response
         pageTitle('Ecran', data.ecran.name);
     })
 
