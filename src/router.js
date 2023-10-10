@@ -21,9 +21,14 @@ const router = createRouter({
       component: () => import("@/views/Slides.vue"),
     },
     {
-      name: "visionner",
+      name: "visionner-ecran",
       path: "/visionner/:slug",
-      component: () => import("@/views/Visionner.vue"),
+      component: () => import("@/views/VisionnerEcran.vue"),
+    },
+    {
+      name: "visionner-slide",
+      path: "/visionner/slide/:id",
+      component: () => import("@/views/VisionnerSlide.vue"),
     },
     {
       meta: { title: "Slides" },

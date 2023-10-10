@@ -10,6 +10,5 @@ import { onMounted } from 'vue';
 
 const ecransStore = useEcransStore();
 onMounted(() => {
-    ecransStore.fetchEcrans();
 })
 </script>

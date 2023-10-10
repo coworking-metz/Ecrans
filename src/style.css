@@ -24,3 +24,38 @@ span[class] {}
     background-color: white;
     z-index: 9999;
 }
+
+
+.visionner .slides:before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: transparent;
+    z-index:999
+}
+.visionner .slides {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+}
+
+.visionner .slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}

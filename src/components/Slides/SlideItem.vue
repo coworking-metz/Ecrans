@@ -8,17 +8,18 @@
         <div class="media-content">
             <nav class="level is-mobile">
                 <div class="level-left">
-                    <router-link :to="{ name: 'slide', params: { id: slide.id } }" >{{ slide.name }}</router-link>&nbsp;<small class="tag">{{ type }}</small>&nbsp;<strong>{{
-                        slide.duration }} secondes</strong>&nbsp;
+                    <router-link :to="{ name: 'slide', params: { id: slide.id } }">{{ slide.name
+                    }}</router-link>&nbsp;<small class="tag">{{ type }}</small>&nbsp;<strong>{{slide.duration}} secondes</strong>&nbsp;
                     <small>{{ formatDateToFrench(slide.created_at) }}</small>
                 </div>
                 <div class="level-right">
                     <router-link :to="{ name: 'slide', params: { id: slide.id } }" class="level-item" v-if="!slide.trash">
                         <span class="icon is-small"><i class="fas fa-pen"></i></span>
                     </router-link>
-                    <a class="level-item" v-if="!slide.trash">
+                    <router-link :to="{ name: 'visionner-slide', params: { id: slide.id } }" class="level-item"
+                        v-if="!slide.trash">
                         <span class="icon is-small"><i class="fas fa-tv"></i></span>
-                    </a>
+                    </router-link>
                     <a class="level-item" @click="deleteSlide" v-if="!slide.trash">
                         <span class="icon is-small"><i class="fas fa-trash"></i></span>
                     </a>

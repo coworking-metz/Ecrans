@@ -1,11 +1,13 @@
 import { defineStore } from "pinia";
 import { createClient } from "@supabase/supabase-js";
+import { useEcransStore } from "@/stores/ecrans";
 import supabase from "@/supabase";
 
 export const useSlidesStore = defineStore("slides", {
   state: () => ({
-    slides: [],
-    liens: [],
+    slides: null,
+    trash: null,
+    liens: null,
     types: [
       { name: "Evenement", slug: "event" },
       { name: "Image", slug: "image" },
@@ -14,16 +16,29 @@ export const useSlidesStore = defineStore("slides", {
     ],
   }),
   actions: {
-    checkEcran(slideId, ecranId) {
+    async getEcrans(slideId) {
+      const ecransStore = useEcransStore();
+      let out = [];
+      await this.fetchLiens(true);
       for (let lien of this.liens) {
-        if (lien.ecranid == ecranId) {
-          if (lien.slideid == slideId) {
-            return true;
-          }
+        if (lien.slide_id == slideId) {
+          out.push(await ecransStore.fetchEcran(lien.ecran_id));
         }
       }
+
+      return out;
     },
-    async fetchLiens() {
+    async checkEcran(slideId, ecranId) {
+      const ecrans = await this.getEcrans(slideId);
+      for (const ecran of ecrans) {
+        if (ecran.id == ecranId) return true;
+      }
+    },
+    async fetchLiens(onlyIfEmpty = false) {
+      if (onlyIfEmpty) {
+        if (this.liens !== null) return;
+      }
+      this.liens = [];
       const { data, error } = await supabase
         .from("liens_ecrans_slides")
         .select("*");
@@ -33,14 +48,21 @@ export const useSlidesStore = defineStore("slides", {
       }
     },
 
-    async fetchSlides(trash = false) {
-      const { data, error } = await supabase
-        .from("slides")
-        .select("*")
-        .eq("trash", trash);
+    async fetchSlides() {
+      const slides = [];
+      const trash = [];
+      const { data, error } = await supabase.from("slides").select("*");
 
       if (!error) {
-        this.slides = data;
+        data.forEach((slide) => {
+          if (slide.trash) {
+            trash.push(slide);
+          } else {
+            slides.push(slide);
+          }
+        });
+        this.slides = slides;
+        this.trash = trash;
       }
     },
     async fetchSlide(id) {

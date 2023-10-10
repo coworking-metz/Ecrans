@@ -11,8 +11,30 @@
         <p class="help">Cette image sera affichée de manière centrée, au dessus du texte</p>
 
         <MediaSelector name="imagePrincipale" />
-    </div>
+        <div class="columns">
+            <div class="column">
 
+                <div class="field">
+                    <label class="label">texte affiché au centre du slide</label>
+                    <div class="control">
+                        <textarea class="textarea is-small" @input="setSlideMeta"
+                            v-model="data.meta.textePrincipal"></textarea>
+                    </div>
+                </div>
+
+            </div>
+            <div class="column is-one-third">
+                <div class="field">
+                    <label class="label">Couleur de fond</label>
+                    <div class="control">
+                        <input type="color" class="input" @input="setSlideMeta" v-model="data.meta.texteColor">
+                        <input type="text" class="input" @input="setSlideMeta" v-model="data.meta.texteColor">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </template>
 <script setup>
 import MediaSelector from '@/components/Medias/MediaSelector.vue'
@@ -34,6 +56,8 @@ function imageThumbnail(image) {
     return image.replace('medias/medias/', 'medias/thumbnails/')
 }
 onMounted(() => {
+    data.meta.texteColor = props.slide?.meta?.texteColor || '#FFFFFF'
+    data.meta.textePrincipal = props.slide?.meta?.textePrincipal || ''
     data.meta.imagePrincipale = props.slide?.meta?.imagePrincipale || ''
     data.meta.image = props.slide?.meta?.image || ''
     data.meta.fit = props.slide?.meta?.fit || 'cover'

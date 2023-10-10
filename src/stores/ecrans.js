@@ -7,6 +7,9 @@ export const useEcransStore = defineStore("ecrans", {
     ecrans: [],
   }),
   actions: {
+    getEcranBySlug(slug) {
+      return this.ecrans.find((ecran) => ecran.slug == slug);
+    },
     async fetchEcrans() {
       const { data, error } = await supabase.from("ecrans").select("*");
 
@@ -18,9 +21,9 @@ export const useEcransStore = defineStore("ecrans", {
       const { data, error } = await supabase
         .from("liens_ecrans_slides")
         .select("*")
-        .eq("ecranid", id);
+        .eq("ecran_id", id);
 
-      const ids = data.map((lien) => lien.slideid);
+      const ids = data.map((lien) => lien.slideId);
       const response = await supabase.from("slides").select("*").in("id", ids);
       return response.data;
     },

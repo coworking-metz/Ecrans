@@ -69,9 +69,7 @@ const medias = computed(() => {
         //     return 0;
     });
 })
-onMounted(() => {
-    mediasStore.fetchMedias();
-})
+
 </script>
 <style scoped>
 .column {

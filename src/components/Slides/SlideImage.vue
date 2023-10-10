@@ -1,5 +1,5 @@
 <template>
-    <div :style="'background:' + props.slide.meta.backgroundColor"><img :src="props.slide.meta.image" :style="'object-fit:' + props.slide.meta.fit"></div>
+    <div :style="'background:' + props.slide.meta.backgroundColor"><img :src="props.slide.meta.image" :style="'object-fit:' + props.slide.meta.fit+';opacity:' + props.slide.meta.opacity"></div>
 </template>
 <script setup>
 const props = defineProps(['slide'])

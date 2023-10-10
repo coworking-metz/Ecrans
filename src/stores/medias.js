@@ -4,7 +4,7 @@ import supabase from "@/supabase";
 
 export const useMediasStore = defineStore("medias", {
   state: () => ({
-    medias: [],
+    medias: null,
   }),
   actions: {
     async prepare(file) {
@@ -38,7 +38,6 @@ export const useMediasStore = defineStore("medias", {
       if (!error) {
         const files = data;
 
-        this.medias = [];
         const medias = [];
         for (let file of files) {
           const media = await this.prepare(file);

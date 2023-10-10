@@ -15,11 +15,9 @@ const data = reactive({
 const route = useRoute()
 const ecransStore = useEcransStore();
 
-onMounted(() => {
-    ecransStore.fetchEcran(route.params.id).then(response => {
-        data.ecran = response
-        pageTitle('Ecran', data.ecran.name);
-    })
-
+onMounted(async () => {
+    const response = await ecransStore.fetchEcran(route.params.id);
+    data.ecran = response
+    pageTitle('Ecran', data.ecran.name);
 });
 </script>

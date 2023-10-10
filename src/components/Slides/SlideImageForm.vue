@@ -28,8 +28,9 @@
             <div class="column">
                 <div class="field">
                     <label class="label">Opacité</label>
+                    <span>{{ data.meta.opacity * 100 }}%</span>
                     <div class="control">
-                        <input class="slider" type="range" step="0.01" min="0" max="1" v-model="data.meta.opacity">
+                        <input class="slider" type="range" step="0.1" min="0" max="1" v-model="data.meta.opacity" @input="setSlideMeta">
                     </div>
                 </div>
 

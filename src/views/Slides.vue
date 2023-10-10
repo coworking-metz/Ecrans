@@ -5,7 +5,7 @@
     <div class="field has-addons">
         <template v-if="data.isTrash">
             <p class="control">
-                <router-link to="/slides" class="button is-small" @click="newSlide">
+                <router-link to="/slides" class="button is-small">
                     <span class="icon is-small">
                         <i class="fas fa-arrow-left"></i>
                     </span>
@@ -23,7 +23,7 @@
                 </button>
             </p>
             <p class="control">
-                <router-link to="/slides/trash" class="button is-small" @click="newSlide">
+                <router-link to="/slides/trash" class="button is-small">
                     <span class="icon is-small">
                         <i class="fas fa-trash"></i>
                     </span>
@@ -39,7 +39,7 @@
 import { useEcransStore } from '@/stores/ecrans'
 import { useSlidesStore } from '@/stores/slides'
 import SlideItem from '@/components/Slides/SlideItem.vue'
-import { onMounted, reactive, computed } from 'vue';
+import { onMounted, reactive, computed, watch } from 'vue';
 import supabase from "@/supabase";
 
 import { useRoute } from 'vue-router'
@@ -54,15 +54,21 @@ const data = reactive({
     ecranId: false
 })
 const slides = computed(() => {
-    return slidesStore.slides.filter((slide) => {
-        if (data.ecranId) {
-            console.log(data.ecranId);
-            if (slidesStore.checkEcran(slide.id, data.ecranId)) {
-                return true
-            }
-        } else return true;
-    })
+    if (data.isTrash) {
+        return slidesStore.trash
+    } else {
+        return slidesStore.slides.filter(filterSlides)
+    }
 })
+
+function filterSlides(slide) {
+    if (data.ecranId) {
+        console.log(data.ecranId);
+        if (slidesStore.checkEcran(slide.id, data.ecranId)) {
+            return true
+        }
+    } else return true;
+}
 const pageTitle = computed(() => {
     if (data.ecran) return `Slide de l'écran "${data.ecran.name}"`;
 
@@ -70,17 +76,16 @@ const pageTitle = computed(() => {
     return 'Liste des slides';
 
 })
-onMounted(loadSlides)
-async function loadSlides() {
-    await slidesStore.fetchLiens();
+watch(() => route.name,start)
+onMounted(start)
+async function start() {
     data.isTrash = route.name == 'slides-trash';
     data.ecranId = Number(route.params.id);
     if (data.ecranId) {
         data.ecran = await ecransStore.fetchEcran(data.ecranId);
     }
-    await slidesStore.fetchSlides(data.isTrash);
 }
-window.bus.on('loadSlides', loadSlides);
+
 async function newSlide() {
     const nb = await getnbSlidesVides();
     const { data, error } = await supabase
@@ -88,8 +93,7 @@ async function newSlide() {
         .insert([
             { name: `Nouveau slide vide (${nb + 1})` }
         ]);
-    loadSlides()
-
+    window.bus.emit('loadSlides')
 }
 async function getnbSlidesVides() {
     const { data, error } = await supabase

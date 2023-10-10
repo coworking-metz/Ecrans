@@ -21,9 +21,6 @@ const data = reactive({
     search: ''
 })
 const mediasStore = useMediasStore();
-const loadMedias = () => {
-    mediasStore.fetchMedias();
-}
 
 const medias = computed(() => {
     return mediasStore.medias.filter(media => {
@@ -35,8 +32,6 @@ const medias = computed(() => {
     })
 })
 window.bus.on('searchMedia', search => data.search = search)
-window.bus.on('loadMedias', loadMedias)
-onMounted(loadMedias)
 </script>
 
 <style scoped>
