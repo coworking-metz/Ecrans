@@ -1,7 +1,7 @@
 @font-face {
     font-family: 'evelethclean_thin';
     src: url('/fonts/evelethcleanthin-webfont.woff2') format('woff2'),
-         url('/fonts/evelethcleanthin-webfont.woff') format('woff');
+        url('/fonts/evelethcleanthin-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 
@@ -13,11 +13,22 @@
 @font-face {
     font-family: 'evelethclean_regular';
     src: url('/fonts/evelethclean-webfont.woff2') format('woff2'),
-         url('/fonts/evelethclean-webfont.woff') format('woff');
+        url('/fonts/evelethclean-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 
 }
+
+#app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.container {
+    min-width: 1200px;
+    width: 100%;
+}
+
 
 span[class] {}
 
@@ -52,8 +63,9 @@ span[class] {}
     position: absolute;
     inset: 0;
     background-color: transparent;
-    z-index:999
+    z-index: 999
 }
+
 .visionner .slides {
     position: fixed;
     top: 0;

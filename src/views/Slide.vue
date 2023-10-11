@@ -49,7 +49,7 @@
                 </div>
             </div>
             <div class="column column-tv">
-                <SlidePreview :slide="data.slide" />
+                <SlidePreview :slide="data.slide" tv="true" />
 
                 <div class="field">
                     <label class="label">Ecrans où diffuser ce slide</label>
@@ -113,7 +113,9 @@ onMounted(async () => {
     pageTitle(data.slide.name, 'Slide');
 
 });
+window.bus.on('loadedIframe', slide => {
 
+})
 window.bus.on('setSlideMeta', meta => {
     console.table(meta)
     for (const key in meta) {
@@ -121,6 +123,8 @@ window.bus.on('setSlideMeta', meta => {
         data.slide.meta[key] = value;
     }
 })
+
+
 
 async function submitForm() {
     window.bus.emit('closeMediaSelector')

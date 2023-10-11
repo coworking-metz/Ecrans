@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, watch } from 'vue';
+import { computed, onMounted, watch, reactive } from 'vue';
 import NavBar from '@/components/NavBar.vue';
 import { useRoute } from 'vue-router';
 import { useEcransStore } from '@/stores/ecrans';
@@ -11,11 +11,17 @@ const ecransStore = useEcransStore();
 const mediasStore = useMediasStore();
 const slidesStore = useSlidesStore();
 
+const data = reactive({
+  hasNavbar: false
+})
 function start() {
   ecransStore.fetchEcrans();
   slidesStore.fetchLiens();
   slidesStore.fetchSlides();
   mediasStore.fetchMedias();
+
+  data.hasNavbar = !route?.name?.includes('visionner');
+
 };
 
 window.bus.on('loadSlides', () => {
@@ -31,16 +37,12 @@ onMounted(start);
 
 watch(() => route.name, start);
 
-const hasNavbar = computed(() => {
-  if (route?.name?.includes('visionner')) return false;
-  return true;
-});
 
 const appReady = computed(() => {
-  if (slidesStore.liens===null) return;
-  if (slidesStore.slides===null) return;
-  if (ecransStore.ecrans===null) return;
-  if (mediasStore.medias===null) return;
+  if (slidesStore.liens === null) return;
+  if (slidesStore.slides === null) return;
+  if (ecransStore.ecrans === null) return;
+  if (mediasStore.medias === null) return;
   // console.log(typeof slidesStore.liens, typeof slidesStore.slides, typeof ecransStore.ecrans, typeof mediasStore.medias)
   // console.log(slidesStore.liens?.length || 0, slidesStore.slides?.length || 0, ecransStore.ecrans?.length || 0, mediasStore.medias?.length || 0)
   return true;
@@ -49,13 +51,11 @@ const appReady = computed(() => {
 
 <template>
   <template v-if="appReady">
-    <template v-if="hasNavbar">
+    <template v-if="data.hasNavbar">
       <nav-bar />
       <div class="container">
         <div class="content">
-          <div class="section">
-            <router-view />
-          </div>
+          <router-view />
         </div>
       </div>
     </template>

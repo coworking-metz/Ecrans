@@ -1,21 +1,33 @@
 <template>
-  <div id="vintage-tv">
-    <a :href="src" target="_blank" id="vintage-tv"></a>
-    <span class="antenna"></span>
-    <span class="screen"><iframe :src="src" frameborder="0" ref="iframe"></iframe></span>
-    <span class="controls-1"></span>
-    <span class="controls-2"></span>
-  </div>
+  <template v-if="props.tv">
+
+    <div id="vintage-tv">
+      <a :href="src" target="_blank" id="vintage-tv"></a>
+      <span class="antenna"></span>
+      <span class="screen"><iframe :src="src" frameborder="0" ref="iframe" @load="loadedIframe"></iframe></span>
+      <span class="controls-1"></span>
+      <span class="controls-2"></span>
+    </div>
+  </template>
+  <template v-else>
+    <div class="iframe"><iframe :src="src" frameborder="0" ref="iframe" @load="loadedIframe"></iframe></div>
+  </template>
 </template>
 <script setup>
 import { computed, ref } from 'vue'
-const props = defineProps(['slide'])
+const props = defineProps(['slide', 'tv'])
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
 const iframe = ref(null);
 
+function loadedIframe() {
+
+
+
+  // window.bus.emit('loadedIframe', props.slide);
+}
 window.bus.on('updateSlidePreview', () => {
   if (iframe.value) {
     iframe.value.contentWindow.location.reload();
@@ -29,7 +41,26 @@ const src = computed(() => {
   }).href;
 })
 </script>
-<style>
+<style scoped>
+.iframe {
+  position: relative;
+  aspect-ratio: 16/9;
+}
+
+.iframe iframe {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.iframe:before {
+  z-index: 1;
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: transparent;
+}
+
 #vintage-tv .screen>iframe {
   position: absolute;
   top: 0;

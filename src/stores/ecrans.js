@@ -10,6 +10,9 @@ export const useEcransStore = defineStore("ecrans", {
     getEcranBySlug(slug) {
       return this.ecrans.find((ecran) => ecran.slug == slug);
     },
+    getEcran(id) {
+      return this.ecrans.find((ecran) => ecran.id == id);
+    },
     async fetchEcrans() {
       const { data, error } = await supabase.from("ecrans").select("*");
 
