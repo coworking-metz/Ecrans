@@ -16,6 +16,13 @@ export const useSlidesStore = defineStore("slides", {
     ],
   }),
   actions: {
+    getSlide(slideId) {
+      for (let slide of this.slides) {
+        if (slide.id == slideId) {
+          return slide;
+        }
+      }
+    },
     getLiens(slideId) {
       const ecransStore = useEcransStore();
       let out = [];

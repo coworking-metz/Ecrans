@@ -14,14 +14,27 @@
   </template>
 </template>
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, reactive } from 'vue'
 const props = defineProps(['slide', 'tv'])
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
+import { useSlidesStore } from "@/stores/slides";
 
 const router = useRouter();
+const route = useRoute();
 
 const iframe = ref(null);
+const slidesStore = useSlidesStore();
 
+const data = reactive({
+  slide: null
+});
+
+
+onMounted(() => {
+  if (route.params.slideId) {
+    data.slide = slidesStore.getSlide(route.params.slideId)
+  }
+})
 function loadedIframe() {
 
 
@@ -35,9 +48,13 @@ window.bus.on('updateSlidePreview', () => {
 });
 
 const src = computed(() => {
+  let slideId;
+  if (data.slide) slideId = data.slide.id;
+  if (props.slide) slideId = props.slide.id || props.slide;
+  if (!slideId) return;
   return router.resolve({
     name: 'visionner-slide',
-    params: { id: props.slide.id },
+    params: { id: slideId },
   }).href;
 })
 </script>

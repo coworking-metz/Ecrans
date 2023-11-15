@@ -2,40 +2,62 @@
     <!-- <h1 class="title">{{ data.ecran.slug }}</h1> -->
     <div class="editeur">
         <div class="apercu">
-            ok </div>
+            <router-link v-if="data.slide" :to="{ name: 'slide', params: { id: data.slide.id } }">
+                <SlidePreview :slide="data.slide" />
+            </router-link>
+        </div>
         <div class="slides" ref="slidesDiv">
-            <div>
-                <template v-for="slide in slides">
-                    <SlidePreview :slide="slide" />
+            <ul ref="liste">
+                <template v-for="slide in slides" :key="slide.id">
+                    <li @dragenter="dragenter" @dragover="dragover" @drop="drop" :id="slide.id">
+                        <SlidePreviewImage :slide="slide" :selected="slide.id == data.slide.id" draggable="true"
+                            @dragstart="dragstart" @dragend="dragend" />
+                    </li>
                 </template>
-                <template v-for="slide in slides">
-                    <SlidePreview :slide="slide" />
-                </template>
-            </div>
+            </ul>
         </div>
     </div>
 </template>
 <script setup>
 import SlidePreview from '@/components/Slides/SlidePreview.vue'
+import SlidePreviewImage from '@/components/Slides/SlidePreviewImage.vue'
 import { onMounted, reactive, computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSlidesStore } from '@/stores/slides'
+import supabase from "@/supabase";
 
 import { useEcransStore } from '@/stores/ecrans'
 import { pageTitle } from '@/utils'
 
 
 const data = reactive({
-    ecran: false
+    ecran: false,
+    slide: false
 })
 const route = useRoute()
 const ecransStore = useEcransStore();
 const slidesStore = useSlidesStore();
 
 const slidesDiv = ref(null);
+const liste = ref(null);
 
+window.bus.on('choisir-slide', slide => {
+    console.log(slide.id)
+    data.slide = Object.assign({}, slide);
+})
 const slides = computed(() => {
-    return slidesStore.slides.filter(filterSlides)
+    const tmpSlides = slidesStore.slides.filter(filterSlides);
+    if (data.ecran.slideSort) {
+        const out = [];
+        data.ecran.slideSort.forEach(id => {
+            tmpSlides.forEach(slide => {
+                if (id == slide.id) {
+                    out.push(slide);
+                }
+            })
+        })
+        return out;
+    } else return tmpSlides;
 })
 function filterSlides(slide) {
     const liens = slidesStore.getLiens(slide.id);
@@ -51,48 +73,107 @@ onMounted(() => {
     data.ecran = response
     pageTitle('Ecran', data.ecran.name);
 
-    if (!slidesDiv.value.dataset.scroll == true) {
-        slidesDiv.value.dataset.scroll = true
-        slidesDiv.value.addEventListener('wheel', function (e) {
-            if (e.deltaX !== 0) {
-                return; // Ne fait rien si le défilement est horizontal
-            }
-            e.preventDefault();
-            slidesDiv.value.scrollLeft += e.deltaY;
-        });
-    }
+
 
 });
+
+function dragenter(e) {
+    e.preventDefault();
+}
+function dragover(e) {
+    e.preventDefault();
+}
+function drop(e) {
+    e.preventDefault();
+
+    let srcContainer = document.getElementById(e.dataTransfer.getData("text"));
+    let srcElement = srcContainer.querySelector("[draggable]");
+    let targetContainer = e.target.closest('[id]');
+    let targetElement = targetContainer.querySelector("[draggable]");
+    document.querySelectorAll('.dragging').forEach(item=>item.classList.remove("dragging"));
+
+    srcContainer.insertAdjacentElement("afterbegin", targetElement);
+    targetContainer.insertAdjacentElement("afterbegin", srcElement);
+}
+function dragstart(e) {
+    e.dataTransfer.setData("text", e.target.closest('[id]').id);
+    e.target.closest('[draggable]').classList.add("dragging");
+
+}
+function dragend(e) {
+    const sort = []
+    liste.value.querySelectorAll('.slidePreview').forEach(item => sort.push(item.dataset.id))
+    console.log(sort);
+    data.ecran.slideSort = sort;
+    supabase
+        .from('ecrans')
+        .update({ slideSort: sort })
+        .eq('id', data.ecran.id).then(response => {
+            console.log(response)
+        })
+
+}
+
 </script>
-<style scoped>
-.editeur {
-    position: absolute;
+<style>
+.dragging {
+    opacity: 0.2;
+}
+
+.container {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.container>.content {
     width: 100%;
     height: 100%;
+    position: absolute;
+}
+
+.editeur {
     display: flex;
-    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+    background-color: #333;
 }
 
 .editeur .apercu {
     flex: 1;
+    position: relative;
+}
+
+.editeur .apercu .iframe {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
 }
 
 .editeur .slides {
-    flex: 0 0 15vh;
-    overflow-x: auto;
-    /* mask: linear-gradient(90deg, transparent, white 20%, white 80%, transparent); */
+    width: 200px;
+    max-height: 100%;
+    overflow-y: auto;
 }
 
-.editeur .slides>div {
-    width: max-content;
-    flex-wrap: nowrap;
+.editeur .slides>ul {
     display: flex;
-    gap: 1vw;
-    height: 100%;
-    padding-bottom: 1vw;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-.editeur .slides>div>div {
-    height: 100%;
+.editeur .slides>ul,
+.editeur .slides>ul>li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
+
+.editeur .slides>ul>li {
+    display: block;
+}
+
+.slides {}
 </style>

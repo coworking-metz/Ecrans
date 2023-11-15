@@ -18,7 +18,6 @@ import { useSlidesStore } from '@/stores/slides'
 import { pageTitle } from '@/utils'
 import SlideRender from '@/components/Slides/SlideRender.vue';
 import supabase, { SUPABASE_URL } from "@/supabase";
-import html2canvas from 'html2canvas';
 
 const route = useRoute()
 const ecransStore = useEcransStore();
@@ -34,20 +33,7 @@ onMounted(async () => {
     data.slide = response[0];
 
 
-    // setTimeout(() => {
 
-    //     const element = visionner.value;
-    //     const slideId = data.slide.id;
-    //     html2canvas(element).then(canvas => {
-    //         document.body.appendChild(canvas);
-    //         canvas.toBlob(async (blob) => {
-    //             const { data, error } = await supabase.storage.from('apercus').upload(slideId + '.png', blob, { upsert: true });
-    //             console.log(SUPABASE_URL + '/storage/v1/object/public/apercus/' + data.path);
-    //         });
-    //         // const imgData = canvas.toDataURL('image/png');
-    //     });
-
-    // }, 2000)
 });
 
 

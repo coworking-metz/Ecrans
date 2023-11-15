@@ -14,6 +14,13 @@ const router = createRouter({
       name: "ecran",
       path: "/ecran/:id",
       component: () => import("@/views/Ecran.vue"),
+      children: [
+        {
+          name: "ecran-slide-preview",
+          path: "slide/:slideId",
+          component: () => import("@/components/Slides/SlidePreview.vue"),
+        },
+      ],
     },
     {
       name: "ecran-slides",

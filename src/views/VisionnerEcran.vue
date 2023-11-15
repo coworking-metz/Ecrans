@@ -1,5 +1,5 @@
 <template>
-    <div class="visionner">
+    <div class="visionner" v-if="data.ecran">
         <div class="slides">
 
             <template v-for="slide in slides" :key="slide.id">
@@ -41,7 +41,19 @@ const slides = computed(() => {
             ids.push(lien.slide_id);
         }
     })
-    return slidesStore.slides.filter(slide => ids.includes(slide.id))
+    const tmpSlides = slidesStore.slides.filter(slide => ids.includes(slide.id))
+    if (data.ecran.slideSort) {
+        const out = [];
+        data.ecran.slideSort.forEach(id => {
+            tmpSlides.forEach(slide => {
+                if (id == slide.id) {
+                    out.push(slide);
+                }
+            })
+        })
+        return out;
+    } else return tmpSlides;
+
 })
 
 onMounted(() => {
