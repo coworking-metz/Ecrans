@@ -55,6 +55,7 @@ const src = computed(() => {
   return router.resolve({
     name: 'visionner-slide',
     params: { id: slideId },
+    query: { render: true }
   }).href;
 })
 </script>

@@ -15,16 +15,21 @@ import { onMounted } from 'vue';
 import SlideImage from '@/components/Slides/SlideImage.vue';
 import SlideUrl from '@/components/Slides/SlideUrl.vue';
 import SlideDefault from '@/components/Slides/SlideDefault.vue';
-const props = defineProps(['slide'])
+const props = defineProps(['slide', 'render'])
 import supabase, { SUPABASE_URL } from "@/supabase";
+import { useRoute } from 'vue-router';
+const route = useRoute();
 
-window.bus.on('saveBlob', async (params) => {
-    console.log('saveBlob')
-    const { data, error } = await supabase
-        .storage
-        .from('apercus')
-        .upload(params.slideId + '.png', params.blob, { upsert: true });
+if (route.query.render) {
+    console.log('render');
+    window.bus.on('saveBlob', async (params) => {
+        console.log('saveBlob')
+        const { data, error } = await supabase
+            .storage
+            .from('apercus')
+            .upload(params.slideId + '.png', params.blob, { upsert: true });
         console.log(data)
 
-})
+    })
+}
 </script>

@@ -56,6 +56,18 @@ const slides = computed(() => {
                 }
             })
         })
+        tmpSlides.forEach(tmpSlide => {
+            let trouve=false;
+            out.forEach(slide => {
+                if(slide.id == tmpSlide.id) {
+                    trouve=true;
+                }
+            })
+            if(!trouve){
+                out.push(tmpSlide)
+            }
+        })
+
         return out;
     } else return tmpSlides;
 })
