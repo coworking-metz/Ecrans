@@ -64,6 +64,13 @@ onMounted(() => {
     window.bus.emit('loadSlides');
     avancer();
     handleShortcuts()
+    if(window.refreshTimeout) {
+        clearTimeout(window.refreshTimeout);
+    }
+    // refresh auto toutes les demies heures
+    window.refreshTimeout = setTimeout(() => {
+        document.location.reload(true);
+    }, 3600 * 1000 / 2 )
 });
 
 function avancer(delta = 1) {
