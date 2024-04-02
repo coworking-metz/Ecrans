@@ -9,7 +9,7 @@
             <div class="content">
                 <p>
                     <strong>
-                        <router-link :to="{ name: 'ecran', params: { id: ecran.id } }">{{ ecran.name }}</router-link>
+                        <router-link :to="{ name: 'ecran-slides', params: { id: ecran.id } }">{{ ecran.name }}</router-link>
                     </strong> &nbsp; <small class="tag">
                         {{ ecran.nb_slides }} slide(s)
                     </small>

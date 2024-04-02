@@ -42,7 +42,9 @@
 
     <button v-if="data.isLoading" class="button is-loading" style="border:none;width:100%">Chargement en cours</button>
     <template v-else>
-        <SlideItem v-for="slide in slides" :slide="slide" />
+        <div>
+            <SlideItem v-for="slide in slides" :ecranId="data.ecranId" :slide="slide" />
+        </div>
     </template>
 </template>
 <script setup>
@@ -70,13 +72,42 @@ const slides = computed(() => {
     if (data.isTrash) {
         return slidesStore.trash
     } else {
-        return slidesStore.slides.filter(filterSlides)
+
+        const tmpSlides = slidesStore.slides.filter(filterSlides)
+
+        if (data.ecran.slideSort) {
+            const out = [];
+            data.ecran.slideSort.forEach(id => {
+                tmpSlides.forEach(slide => {
+                    if (id == slide.id) {
+                        out.push(slide);
+                    }
+                })
+            })
+            tmpSlides.forEach(tmpSlide => {
+                let trouve = false;
+                out.forEach(slide => {
+                    if (slide.id == tmpSlide.id) {
+                        trouve = true;
+                    }
+                })
+                if (!trouve) {
+                    out.push(tmpSlide)
+                }
+            })
+            console.log(out)
+            return out;
+        }
+
+
+        return tmpSlides;
     }
 })
 
 function filterSlides(slide) {
     if (data.ecranId) {
         const liens = slidesStore.getLiens(slide.id);
+
         for (const lien of liens) {
             if (lien.ecran_id == data.ecranId) {
                 return true
@@ -133,4 +164,33 @@ async function getnbSlidesVides() {
     }
     return nb;
 }
+
+
+
+window.bus.on('update-sort', args => {
+    const srcIndex = data.ecran.slideSort.indexOf(args.srcId);
+    const targetIndex = data.ecran.slideSort.indexOf(args.targetId);
+
+    if (srcIndex !== -1) {
+        data.ecran.slideSort.splice(srcIndex, 1);
+    }
+
+    const newIndex = data.ecran.slideSort.indexOf(args.targetId) + (srcIndex < targetIndex ? 1 : 0);
+
+    data.ecran.slideSort.splice(newIndex, 0, args.srcId);
+
+
+    supabase
+        .from('ecrans')
+        .update({ slideSort: data.ecran.slideSort })
+        .eq('id', data.ecran.id).then(response => {
+            console.log(response)
+        })
+
+
+});
+
+
+
+
 </script>

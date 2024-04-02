@@ -1,6 +1,17 @@
 <template>
-    <h1 class="title">Liste des écrans disponibles</h1>
-    <p class="subtitle">Pour ajouter un écran, consulter la documentation</p>
+
+    <h1 class="title mt-5 ">Liste des écrans disponibles</h1>
+    <div class="field has-addons mb-5">
+        <p class="control">
+            <button class="button is-small is-success" @click="newSlide">
+                <span class="icon is-small">
+                    <i class="fas fa-plus"></i>
+                </span>
+                <span>Ajouter un écran</span>
+            </button>
+        </p>
+    </div>
+
     <EcranItem v-for="ecran in ecransStore.ecrans" :ecran="ecran" />
 </template>
 <script setup>
