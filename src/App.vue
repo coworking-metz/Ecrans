@@ -53,7 +53,7 @@ const appReady = computed(() => {
   <template v-if="appReady">
     <template v-if="data.hasNavbar">
       <nav-bar />
-      <div class="container">
+      <div class="container ml-5 mr-5 mt-5">
         <div class="content">
           <router-view />
         </div>

@@ -51,7 +51,7 @@ const slides = computed(() => {
                 }
             })
         })
-        return out;
+        return out.filter(slide => slide.active);
     } else return tmpSlides;
 
 })

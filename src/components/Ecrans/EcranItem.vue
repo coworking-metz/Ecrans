@@ -17,15 +17,15 @@
             </div>
             <nav class="level is-mobile">
                 <div class="level-left">
-                    <router-link :to="{ name: 'visionner-ecran', params: { slug: ecran.slug } }" title="Visionner cet écran" class="level-item" target="_blank">
+                    <router-link v-if="ecran.slug" :to="{ name: 'visionner-ecran', params: { slug: ecran.slug } }" title="Visionner cet écran" class="level-item" target="_blank">
                         <span class="icon is-small"><i class="fas fa-tv"></i></span>
                     </router-link>
                     <router-link :to="{ name: 'ecran-slides', params: { id: ecran.id } }" title="Slides de l'écran" class="level-item">
                         <span class="icon is-small"><i class="fas fa-images"></i></span>
                     </router-link>
-                    <!-- <router-link :to="{ name: 'ecran', params: { id: ecran.id } }" title="Editer cet écran" class="level-item">
+                    <router-link :to="{ name: 'ecran', params: { id: ecran.id } }" title="Editer cet écran" class="level-item">
                         <span class="icon is-small"><i class="fas fa-pen"></i></span>
-                    </router-link> -->
+                    </router-link>
                 </div>
             </nav>
         </div>

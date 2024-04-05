@@ -4,6 +4,7 @@ export const pageTitle = (...args) => {
 };
 
 export const formatDateToFrench = (dateString) => {
+  if(!dateString) return;
   const date = new Date(dateString);
   const options = {
     year: "numeric",

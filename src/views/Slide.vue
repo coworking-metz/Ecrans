@@ -50,14 +50,14 @@
             </div>
             <div class="column column-tv">
                 <SlidePreview :slide="data.slide" tv="true" />
-
                 <div class="field">
                     <label class="label">Ecrans où diffuser ce slide</label>
                     <div class="control">
                         <div class="select is-multiple is-fullwidth">
                             <select multiple="multiple" v-model="data.ecransIds">
-                                <option v-for="ecran in ecransStore.ecrans" :key="ecran.id" :value="ecran.id">{{ ecran.name
-                                }}
+                                <option v-for="ecran in ecransStore.ecrans" :key="ecran.id" :value="ecran.id">{{
+        ecran.name
+    }}
                                 </option>
                             </select>
                         </div>
@@ -74,6 +74,9 @@
             <button class="button is-primary" :class="{ 'is-loading': data.isLoading }">Valider</button>
             <router-link to="/slides" class="button is-text">Annuler</router-link>
         </div>
+        <p><small>Créé le {{ formatDateToFrench(data.slide.created_at) }} / Dernière modification le {{
+                formatDateToFrench(data.slide.updated_at) }}</small></p>
+
     </form>
 </template>
 <script setup>
@@ -83,6 +86,7 @@ import SlideImageForm from '@/components/Slides/SlideImageForm.vue'
 import SlideDefaultForm from '@/components/Slides/SlideDefaultForm.vue'
 import { onMounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'
+import { formatDateToFrench } from '@/utils'
 
 import { useSlidesStore } from '@/stores/slides'
 import { useEcransStore } from '@/stores/ecrans'
@@ -150,6 +154,10 @@ async function submitForm() {
         .update(data.slide)
         .eq('id', data.slide.id);
     window.bus.emit('updateSlidePreview');
+
+    const response = await slidesStore.fetchSlide(route.params.id)
+    data.slide = response[0];
+
     setTimeout(() => data.isLoading = false, 2000);
 }
 </script>

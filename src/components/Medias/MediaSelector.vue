@@ -52,7 +52,7 @@ window.bus.on('selectMedia', selectMedia)
 function selectMedia(params) {
     if (params.name && params.name != props.name) return;
     data.selected = params.id;
-    window.bus.emit('updateMedia', params);
+    setTimeout(() => window.bus.emit('updateMedia', params),2000);
     data.closed = true;
 }
 

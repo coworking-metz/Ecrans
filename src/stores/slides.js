@@ -9,7 +9,7 @@ export const useSlidesStore = defineStore("slides", {
     trash: null,
     liens: null,
     types: [
-      { name: "Evenement", slug: "event" },
+      // { name: "Evenement", slug: "event" },
       { name: "Image", slug: "image" },
       { name: "Url", slug: "url" },
       { name: "Défaut", slug: "default" },

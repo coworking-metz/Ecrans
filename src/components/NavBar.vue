@@ -1,4 +1,3 @@
-
 <script setup>
 import Logo from '@/components/Logo.vue';
 import { reactive } from 'vue';
@@ -17,26 +16,16 @@ function toggleNavBar() {
             <router-link class="navbar-item" to="/">
                 <Logo width="30" height="30" />
             </router-link>
-            <button role="button" @click="toggleNavBar()" class="navbar-burger" aria-label="menu" aria-expanded="false"
-                data-target="navbarMenu" :class="{ 'is-active': data.ouvert }">
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-            </button>
+            <router-link class="navbar-item" to="/">
+                Ecrans
+            </router-link>
+            <router-link class="navbar-item" to="/slides">
+                Slides
+            </router-link>
+            <router-link class="navbar-item" to="/medias">
+                Medias
+            </router-link>
         </div>
 
-        <div class="navbar-menu" :class="{ 'is-active': data.ouvert }">
-            <div class="navbar-start">
-                <router-link class="navbar-item" to="/">
-                    Ecrans
-                </router-link>
-                <router-link class="navbar-item" to="/slides">
-                    Slides
-                </router-link>
-                <router-link class="navbar-item" to="/medias">
-                    Medias
-                </router-link>
-            </div>
-        </div>
     </nav>
 </template>

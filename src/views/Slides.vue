@@ -68,7 +68,6 @@ const data = reactive({
     ecranId: false
 })
 const slides = computed(() => {
-    console.log('computed')
     if (data.isTrash) {
         return slidesStore.trash
     } else {
@@ -168,17 +167,27 @@ async function getnbSlidesVides() {
 
 
 window.bus.on('update-sort', args => {
-    const srcIndex = data.ecran.slideSort.indexOf(args.srcId);
-    const targetIndex = data.ecran.slideSort.indexOf(args.targetId);
+    const slideSort = data.ecran.slideSort;
 
-    if (srcIndex !== -1) {
-        data.ecran.slideSort.splice(srcIndex, 1);
+    if (!slideSort) {
+        slideSort = []
+        slides.value.forEach(slide => {
+            slideSort.push(slide.id)
+        })
     }
 
-    const newIndex = data.ecran.slideSort.indexOf(args.targetId) + (srcIndex < targetIndex ? 1 : 0);
+    const srcIndex = slideSort.indexOf(args.srcId);
+    const targetIndex = slideSort.indexOf(args.targetId);
 
-    data.ecran.slideSort.splice(newIndex, 0, args.srcId);
+    if (srcIndex !== -1) {
+        slideSort.splice(srcIndex, 1);
+    }
 
+    const newIndex = slideSort.indexOf(args.targetId) + (srcIndex < targetIndex ? 1 : 0);
+
+    slideSort.splice(newIndex, 0, args.srcId);
+
+    data.ecran.slideSort = slideSort.map(id => Number(id)).filter((value, index, array) => array.indexOf(value) === index);
 
     supabase
         .from('ecrans')

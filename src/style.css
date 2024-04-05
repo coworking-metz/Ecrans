@@ -38,10 +38,6 @@
     flex-direction: column;
     min-height: 100vh;
 }
-.container {
-    /* min-width: 1200px; */
-    width: 100%;
-}
 
 
 span[class] {}
@@ -58,7 +54,7 @@ span[class] {}
 }
 
 
-.validation-bar {
+._validation-bar {
     position: fixed;
     bottom: 0;
     left: 0;
