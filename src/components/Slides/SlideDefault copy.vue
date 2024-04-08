@@ -2,11 +2,11 @@
     <template v-if="props.slide.meta">
         <div :style="'background:' + props.slide.meta.backgroundColor">
 
-            <img :src="props.slide.meta.image"
+            <img :src="slideImage"
                 :style="'object-fit:' + props.slide.meta.fit + ';opacity:' + props.slide.meta.opacity">
 
             <div class="contenu">
-                <div class="image"><img :src="props.slide.meta.imagePrincipale"></div>
+                <div class="image"><img :src="imagePrincipale"></div>
                 <div class="texte" :style="'color:' + props.slide.meta.color">
                     <h1>{{ props.slide.meta.titre }}</h1>
                     <p v-html="texte"></p>
@@ -21,6 +21,12 @@ const props = defineProps(['slide'])
 
 const texte = computed(() => {
     return props.slide.meta.texte.replaceAll('\n', '<br>');
+})
+const slideImage = computed(() => {
+    return supabaseMediaUrl(props.slide.meta.image)
+});
+const imagePrincipale = compute(() => {
+    return supabaseMediaUrl(props.slide.meta.imagePrincipale)    
 })
 
 </script>

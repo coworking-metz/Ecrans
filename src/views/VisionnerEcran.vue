@@ -43,18 +43,23 @@ const slides = computed(() => {
     })
     const tmpSlides = slidesStore.slides.filter(slide => ids.includes(slide.id))
     if (data.ecran.slideSort) {
-        const out = [];
-        data.ecran.slideSort.forEach(id => {
-            tmpSlides.forEach(slide => {
-                if (id == slide.id) {
-                    out.push(slide);
-                }
-            })
-        })
-        return out.filter(slide => slide.active);
+        const out = sortSlidesByIds(tmpSlides, data.ecran.slideSort);
+        const actifs = out.filter(slide => slide.active);
+        console.log('actifs et autres', JSON.parse(JSON.stringify(actifs)), data.ecran.slideSort.length);
+        return actifs;
     } else return tmpSlides;
 
 })
+
+function sortSlidesByIds(slides, ids) {
+  const slidesMap = new Map(slides.map(slide => [slide.id, slide]));
+  const sortedSlides = ids.map(id => slidesMap.get(id)).filter(slide => slide !== undefined);
+  const remainingSlides = slides.filter(slide => !ids.includes(slide.id));
+  return [...sortedSlides, ...remainingSlides];
+}
+
+
+
 
 onMounted(() => {
     const response = ecransStore.getEcranBySlug(route.params.slug);
@@ -75,7 +80,7 @@ onMounted(() => {
 
 function avancer(delta = 1) {
     data.currentSlide = slides.value[data.index];
-    console.log(slides.value, data.index)
+    // console.log(slides.value, data.index)
     data.index += delta;
     if (data.index >= slides.value.length) {
         data.index = 0;

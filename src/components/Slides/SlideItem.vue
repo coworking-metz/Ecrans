@@ -1,11 +1,6 @@
 <template>
     <article class="media mb-2" :draggable="!!ecranId" @dragstart="dragstart" @dragenter="dragenter"
         @dragover="dragover" @drop="drop" :id="slide.id">
-        <!-- <figure class="media-left">
-            <p class="image is-64x64">
-                <img src="https://bulma.io/images/placeholders/128x128.png">
-            </p>
-        </figure> -->
         <div class="media-content">
             <nav class="level is-mobile">
                 <div class="level-left">

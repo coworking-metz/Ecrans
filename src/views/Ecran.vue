@@ -82,7 +82,7 @@ window.bus.on(`updateMedia`, (params) => {
 
 
 const imageThumbnail = computed(() => {
-    return data.ecran.image.replace('medias/medias/', 'medias/thumbnails/')
+    return supabaseMediaUrl(data.ecran.image.replace('medias/medias/', 'medias/thumbnails/'))
 })
 
 

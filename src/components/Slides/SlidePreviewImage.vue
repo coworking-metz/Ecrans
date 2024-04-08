@@ -28,7 +28,7 @@ const src = computed(() => {
     .storage
     .from('apercus')
     .getPublicUrl(props.slide.id + '.png');
-  return data.publicUrl;
+  return supabaseMediaUrl(data.publicUrl);
 })
 
 function choisir() {

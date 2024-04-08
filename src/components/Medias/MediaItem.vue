@@ -3,7 +3,7 @@
     <article class="media" @click="selectMedia" :class="{ 'is-selected': props.selected, 'is-selectable': !props.edit }">
         <figure class="media-left">
             <p class="image">
-                <a :href="media.url" target="_blank"><img :src="media.thumbnail" :alt="media.file.name"></a>
+                <a :href="media.url" target="_blank"><img :src="mediaThumbnail" :alt="media.file.name"></a>
             </p>
         </figure>
         <div class="media-content">
@@ -34,7 +34,9 @@ import { shortenFileName, formatDateToFrench } from '@/utils'
 const props = defineProps(['media', 'edit', 'selected', 'name'])
 import supabase from "@/supabase";
 
-
+const mediaThumbnail = computed(() => {
+    return supabaseMediaUrl(props.media.thumbnail)    
+})
 async function deleteMedia() {
     if (!confirm(`Effacer le fichier ${props.media.file.name} ? `)) return;
     const { error } = await supabase.storage.from('medias').remove([`medias/${props.media.file.name}`, `thumbnails/${props.media.file.name}`]);

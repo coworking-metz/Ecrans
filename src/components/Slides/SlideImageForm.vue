@@ -65,7 +65,7 @@ window.bus.on(`updateMedia`, (params) => {
 
 
 const imageThumbnail = computed(() => {
-    return data.meta.image.replace('medias/medias/', 'medias/thumbnails/')
+    return supabaseMediaUrl(data.meta.image.replace('medias/medias/', 'medias/thumbnails/'))
 })
 onMounted(() => {
     data.meta.opacity = props.slide?.meta?.opacity || 1

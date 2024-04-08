@@ -2,7 +2,7 @@
     <article class="media mb-2">
         <figure class="media-left">
             <p class="image">
-                <img :src="ecran.image">
+                <img :src="ecranImage">
             </p>
         </figure>
         <div class="media-content">
@@ -34,7 +34,13 @@
     </article>
 </template>
 <script setup>
+import { computed } from 'vue';
+
 const props = defineProps(['ecran'])
+
+const ecranImage = computed(() => {
+    return supabaseMediaUrl(props.ecran.image)
+})
 </script>
 <style scoped>
 .image img {

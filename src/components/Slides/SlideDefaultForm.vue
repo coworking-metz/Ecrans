@@ -60,7 +60,7 @@ window.bus.on(`updateMedia`, (params) => {
 });
 
 function imageThumbnail(image) {
-    return image.replace('medias/medias/', 'medias/thumbnails/')
+    return supabaseMediaUrl(image.replace('medias/medias/', 'medias/thumbnails/'))
 }
 onMounted(() => {
     data.meta.color = props.slide?.meta?.color || '#FFFFFF'
