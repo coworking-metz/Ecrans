@@ -16,6 +16,7 @@
 <script setup>
 import { onMounted, reactive, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import supabase from "@/supabase";
 
 import { useEcransStore } from '@/stores/ecrans'
 import { useSlidesStore } from '@/stores/slides'
@@ -32,6 +33,7 @@ const data = reactive({
     index: 0,
     currentSlide: false,
     ecran: false,
+    updated_at:false
 })
 
 const slides = computed(() => {
@@ -45,39 +47,57 @@ const slides = computed(() => {
     if (data.ecran.slideSort) {
         const out = sortSlidesByIds(tmpSlides, data.ecran.slideSort);
         const actifs = out.filter(slide => slide.active);
-        console.log('actifs et autres', JSON.parse(JSON.stringify(actifs)), data.ecran.slideSort.length);
+        console.log(actifs);
         return actifs;
     } else return tmpSlides;
 
 })
 
 function sortSlidesByIds(slides, ids) {
-  const slidesMap = new Map(slides.map(slide => [slide.id, slide]));
-  const sortedSlides = ids.map(id => slidesMap.get(id)).filter(slide => slide !== undefined);
-  const remainingSlides = slides.filter(slide => !ids.includes(slide.id));
-  return [...sortedSlides, ...remainingSlides];
+    const slidesMap = new Map(slides.map(slide => [slide.id, slide]));
+    const sortedSlides = ids.map(id => slidesMap.get(id)).filter(slide => slide !== undefined);
+    const remainingSlides = slides.filter(slide => !ids.includes(slide.id));
+    return [...sortedSlides, ...remainingSlides];
 }
 
 
 
 
 onMounted(() => {
-    const response = ecransStore.getEcranBySlug(route.params.slug);
-    data.ecran = response;
+    chargerEcran();
     pageTitle('Visionner', data.ecran.name);
     // await loadSlides();
     window.bus.emit('loadSlides');
     avancer();
     handleShortcuts()
-    if(window.refreshTimeout) {
-        clearTimeout(window.refreshTimeout);
+    if (window.refreshInterval) {
+        clearTimeout(window.refreshInterval);
     }
-    // refresh auto toutes les demies heures
-    window.refreshTimeout = setTimeout(() => {
-        document.location.reload(true);
-    }, 3600 * 1000 / 2 )
+    window.refreshInterval = setInterval(async () => {
+        const response = await supabase
+            .from('slides')
+            .select('updated_at')
+            .not('updated_at', 'is', null) // Filtre pour exclure les valeurs null
+            .order('updated_at', { ascending: false })
+            .limit(1);
+
+            const updated_at = response.data[0].updated_at || false;
+            console.log('updated_at',updated_at);
+            if(data.updated_at) {
+                if(data.updated_at != updated_at) {
+                    // chargerEcran();
+                    document.location.reload(true)
+                }
+            }
+            data.updated_at = updated_at;
+    }, 60000);
 });
 
+function chargerEcran() {
+    const response = ecransStore.getEcranBySlug(route.params.slug);
+    data.ecran = response;
+    console.log('chargerEcran',slides.value.length, 'slides')
+}
 function avancer(delta = 1) {
     data.currentSlide = slides.value[data.index];
     // console.log(slides.value, data.index)

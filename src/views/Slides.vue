@@ -22,7 +22,7 @@
                 </button>
             </p>
             <p class="control" v-if="data.ecranId && data.ecran.name">
-                <router-link :to="{ name: 'ecran', params: { id: data.ecranId } }" class="button is-small is-link">
+                <router-link :to="{ name: 'visionner-ecran', params: { slug: data.ecran.slug } }" target="_blank" class="button is-small is-link">
                     <span class="icon is-small">
                         <i class="fas fa-tv"></i>
                     </span>
@@ -94,7 +94,7 @@ const slides = computed(() => {
                     out.push(tmpSlide)
                 }
             })
-            console.log(out)
+            // console.log(out)
             return out;
         }
 
@@ -135,8 +135,24 @@ async function start() {
     watch(() => route.params, start)
     watch(() => route.name, start)
 
-    setTimeout(() => data.isLoading = false, 1000);
+    setTimeout(() => {
+        data.isLoading = false
+    }, 1000);
 }
+window.bus.on('save-sort', () => {
+    if (!slides) return;
+    if (!data.ecran) return;
+    const slideSort = slides.value.map(slide => slide.id);
+    supabase
+        .from('ecrans')
+        .update({ slideSort: slideSort })
+        .eq('id', data.ecran.id).then(response => {
+            // console.log(response)
+            data.ecran.slideSort = slideSort
+        })
+});
+
+
 
 async function newSlide() {
     const nb = await getnbSlidesVides();
@@ -189,12 +205,14 @@ window.bus.on('update-sort', args => {
 
     data.ecran.slideSort = slideSort.map(id => Number(id)).filter((value, index, array) => array.indexOf(value) === index);
 
-    supabase
-        .from('ecrans')
-        .update({ slideSort: data.ecran.slideSort })
-        .eq('id', data.ecran.id).then(response => {
-            console.log(response)
-        })
+    window.bus.emit('save-sort');
+
+    // supabase
+    //     .from('ecrans')
+    //     .update({ slideSort: data.ecran.slideSort })
+    //     .eq('id', data.ecran.id).then(response => {
+    //         console.log(response)
+    //     })
 
 
 });

@@ -143,7 +143,7 @@ function drop(e) {
     let srcId = Number(e.dataTransfer.getData("text"))
     let targetId = Number(e.target.closest('[id]').id);
 
-    console.log({ srcId, targetId }, e.target.closest('[id]'))
+    // console.log({ srcId, targetId }, e.target.closest('[id]'))
 
 
     window.bus.emit('update-sort', { srcId, targetId });
