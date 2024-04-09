@@ -66,7 +66,7 @@ div>img {
 
 .texte div {
     font-family: 'evelethclean_thin', 'Arial';
-    font-size: 2.2vw;
+    font-size: 2.1vw;
     line-height: 1.1;
     display: flex;
     flex-direction: column;
@@ -96,7 +96,7 @@ div>img {
     font-size: 3.2vw;
 }
 .texte div .ql-size-small{
-    font-size: 1.9vw;
+    font-size: 1.5vw;
 }
 .texte h1 {
     font-family: 'evelethclean_regular', 'Arial black';
