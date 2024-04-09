@@ -16,7 +16,7 @@
                 <div class="field">
                     <label class="label">Titre</label>
                     <div class="control">
-                        <input class="input" type="text" v-model="data.meta.titre"  @input="setSlideMeta">
+                        <input class="input" type="text" v-model="data.meta.titre" @input="setSlideMeta">
                     </div>
                     <p class="help"></p>
                 </div>
@@ -24,8 +24,8 @@
                 <div class="field">
                     <label class="label">Texte</label>
                     <div class="control">
-                        <textarea class="textarea is-small" @input="setSlideMeta"
-                            v-model="data.meta.texte"></textarea>
+                        <!-- <textarea class="textarea is-small" @input="setSlideMeta" v-model="data.meta.texte"></textarea> -->
+                        <div ref="editor"></div>
                     </div>
                 </div>
 
@@ -45,12 +45,39 @@
 </template>
 <script setup>
 import MediaSelector from '@/components/Medias/MediaSelector.vue'
-import { reactive, defineProps, onMounted, computed } from 'vue'
+import { reactive, defineProps, onMounted, computed, ref } from 'vue'
 import { useMediasStore } from '@/stores/medias'
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
+
 const mediasStore = useMediasStore();
 const props = defineProps(['slide'])
-
+const editor = ref(null);
 const data = reactive({ meta: { image: '' } });
+let quillInstance;
+
+const toolbarOptions = [
+    ['bold', 'italic', 'underline', 'strike'],
+    // ['blockquote', 'code-block'],
+    // ['link', 'image', 'video', 'formula'],
+
+    [{ 'header': 1 }, { 'header': 2 }],
+    // [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+    // [{ 'script': 'sub' }, { 'script': 'super' }],
+    // [{ 'indent': '-1' }, { 'indent': '+1' }],
+    // [{ 'direction': 'rtl' }],
+
+    [{ 'size': ['small', false, 'large', 'huge'] }],
+    // [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'font': [] }],
+    [{ 'align': [] }],
+
+    ['clean']
+];
+
+
 
 window.bus.on(`updateMedia`, (params) => {
     const media = mediasStore.fetchMedia(params.id);
@@ -63,6 +90,7 @@ function imageThumbnail(image) {
     return supabaseMediaUrl(image.replace('medias/medias/', 'medias/thumbnails/'))
 }
 onMounted(() => {
+
     data.meta.color = props.slide?.meta?.color || '#FFFFFF'
     data.meta.texte = props.slide?.meta?.texte || ''
     data.meta.titre = props.slide?.meta?.titre || ''
@@ -70,6 +98,17 @@ onMounted(() => {
     data.meta.image = props.slide?.meta?.image || ''
     data.meta.fit = props.slide?.meta?.fit || 'cover'
     data.meta.backgroundColor = props.slide?.meta?.backgroundColor || '#000000'
+
+    quillInstance = new Quill(editor.value, {
+        theme: 'snow',
+        modules: { toolbar: toolbarOptions }
+    });
+    quillInstance.root.innerHTML = data.meta.texte;
+    quillInstance.on('text-change', () => {
+        data.meta.texte = quillInstance.root.innerHTML;
+        setSlideMeta()
+    });
+
 })
 
 function setSlideMeta() {
@@ -86,5 +125,9 @@ function setSlideMeta() {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.text-preview blockquote {
+    white-space: preserve;
 }
 </style>
