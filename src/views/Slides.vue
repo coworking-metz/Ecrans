@@ -38,6 +38,14 @@
                         <span>Recharger</span>
                     </a>
                 </p>
+                <p class="control">
+                    <a @click="avancerSlideEcran" target="_blank" class="button is-small">
+                        <span class="icon is-small">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                        <span>Avancer</span>
+                    </a>
+                </p>
             </template>
             <p class="control">
                 <router-link to="/slides/trash" class="button is-small is-danger">
@@ -72,6 +80,9 @@ const ecransStore = useEcransStore();
 
 function refreshEcran() {
     window.ws.send({ name: "refresh-ecran", id: data.ecranId });
+}
+function avancerSlideEcran() {
+    window.ws.send({ name: "avancer-ecran", id: data.ecranId });
 }
 
 

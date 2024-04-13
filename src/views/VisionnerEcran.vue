@@ -78,6 +78,11 @@ window.bus.on('refresh-ecran',payload => {
         document.location.reload(true)
     }
 })
+window.bus.on('avancer-ecran',payload => {
+    if(payload?.id == data.ecran?.id) {
+        avancer()
+    }
+})
 function chargerEcran() {
     const response = ecransStore.getEcranBySlug(route.params.slug);
     data.ecran = response;
