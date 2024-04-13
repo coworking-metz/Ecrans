@@ -75,7 +75,7 @@ onMounted(() => {
 
 window.bus.on('refresh-ecran',payload => {
     if(payload?.id == data.ecran?.id) {
-        document.location.reload(true)
+        document.location.reload()
     }
 })
 window.bus.on('avancer-ecran',payload => {
