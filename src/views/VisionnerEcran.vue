@@ -70,29 +70,14 @@ onMounted(() => {
     window.bus.emit('loadSlides');
     avancer();
     handleShortcuts()
-    if (window.refreshInterval) {
-        clearTimeout(window.refreshInterval);
-    }
-    window.refreshInterval = setInterval(async () => {
-        const response = await supabase
-            .from('slides')
-            .select('updated_at')
-            .not('updated_at', 'is', null) // Filtre pour exclure les valeurs null
-            .order('updated_at', { ascending: false })
-            .limit(1);
-
-            const updated_at = response.data[0].updated_at || false;
-            console.log('updated_at',updated_at);
-            if(data.updated_at) {
-                if(data.updated_at != updated_at) {
-                    // chargerEcran();
-                    document.location.reload(true)
-                }
-            }
-            data.updated_at = updated_at;
-    }, 60000);
+   
 });
 
+window.bus.on('refresh-ecran',payload => {
+    if(payload?.id == data.ecran?.id) {
+        document.location.reload(true)
+    }
+})
 function chargerEcran() {
     const response = ecransStore.getEcranBySlug(route.params.slug);
     data.ecran = response;

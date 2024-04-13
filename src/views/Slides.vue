@@ -21,16 +21,26 @@
                     <span>Créer un nouveau slide</span>
                 </button>
             </p>
-            <p class="control" v-if="data.ecranId && data.ecran.name">
-                <router-link :to="{ name: 'visionner-ecran', params: { slug: data.ecran.slug } }" target="_blank" class="button is-small is-link">
-                    <span class="icon is-small">
-                        <i class="fas fa-tv"></i>
-                    </span>
-                    <span>{{ data.ecran.name }}</span>
-                </router-link>
-            </p>
+            <template v-if="data.ecranId && data.ecran.name">
+                <p class="control">
+                    <router-link :to="{ name: 'visionner-ecran', params: { slug: data.ecran.slug } }" target="_blank" class="button is-small is-link">
+                        <span class="icon is-small">
+                            <i class="fas fa-tv"></i>
+                        </span>
+                        <span>{{ data.ecran.name }}</span>
+                    </router-link>
+                </p>
+                <p class="control">
+                    <a @click="refreshEcran" target="_blank" class="button is-small">
+                        <span class="icon is-small">
+                            <i class="fas fa-sync"></i>
+                        </span>
+                        <span>Recharger</span>
+                    </a>
+                </p>
+            </template>
             <p class="control">
-                <router-link to="/slides/trash" class="button is-small">
+                <router-link to="/slides/trash" class="button is-small is-danger">
                     <span class="icon is-small">
                         <i class="fas fa-trash"></i>
                     </span>
@@ -59,6 +69,10 @@ import router from '../router';
 const route = useRoute()
 const slidesStore = useSlidesStore();
 const ecransStore = useEcransStore();
+
+function refreshEcran() {
+    window.ws.send({ name: "refresh-ecran", id: data.ecranId });
+}
 
 
 const data = reactive({
@@ -117,7 +131,7 @@ function filterSlides(slide) {
     }
 }
 const pageTitle = computed(() => {
-    if (data.ecran) return `Slide de l'écran "${data.ecran.name}"`;
+    if (data.ecran) return `Slides de l'écran "${data.ecran.name}"`;
 
     if (data.isTrash) return 'Corbeille des slides';
     return 'Liste des slides';
