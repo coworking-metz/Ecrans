@@ -124,3 +124,8 @@ function handleShortcuts() {
 
 
 </script>
+<style>
+html, body {
+    overflow: hidden;
+}
+</style>
