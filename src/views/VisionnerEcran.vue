@@ -80,6 +80,7 @@ window.bus.on('refresh-ecran',payload => {
 })
 window.bus.on('avancer-ecran',payload => {
     if(payload?.id == data.ecran?.id) {
+        clearTimeout(timeout);
         avancer()
     }
 })
