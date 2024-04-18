@@ -33,7 +33,7 @@ const data = reactive({
     index: 0,
     currentSlide: false,
     ecran: false,
-    updated_at:false
+    updated_at: false
 })
 
 const slides = computed(() => {
@@ -70,16 +70,22 @@ onMounted(() => {
     window.bus.emit('loadSlides');
     avancer();
     handleShortcuts()
-   
+
 });
 
-window.bus.on('refresh-ecran',payload => {
-    if(payload?.id == data.ecran?.id) {
-        document.location.reload()
+let timer;
+window.bus.on('refresh-ecran', payload => {
+    if (payload?.id == data.ecran?.id) {
+        if (timer) {
+            clearTimeout(timer);
+            document.location.reload(true)
+        } else {
+            timer = setTimeout(() => document.location.reload(), 3000);
+        }
     }
 })
-window.bus.on('avancer-ecran',payload => {
-    if(payload?.id == data.ecran?.id) {
+window.bus.on('avancer-ecran', payload => {
+    if (payload?.id == data.ecran?.id) {
         clearTimeout(timeout);
         avancer()
     }
@@ -87,7 +93,7 @@ window.bus.on('avancer-ecran',payload => {
 function chargerEcran() {
     const response = ecransStore.getEcranBySlug(route.params.slug);
     data.ecran = response;
-    console.log('chargerEcran',slides.value.length, 'slides')
+    console.log('chargerEcran', slides.value.length, 'slides')
 }
 function avancer(delta = 1) {
     data.currentSlide = slides.value[data.index];
@@ -125,7 +131,8 @@ function handleShortcuts() {
 
 </script>
 <style>
-html, body {
+html,
+body {
     overflow: hidden;
 }
 </style>
