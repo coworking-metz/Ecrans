@@ -11,6 +11,12 @@
                     <h1>{{ props.slide.meta.titre }}</h1>
                     <div v-html="texte"></div>
                 </div>
+
+            </div>
+
+
+            <div class="qr" v-if="props.slide.meta.url">
+                <img :src="'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + props.slide.meta.url">
             </div>
         </div>
     </template>
@@ -26,7 +32,7 @@ const slideImage = computed(() => {
     return supabaseMediaUrl(props.slide.meta.image)
 });
 const imagePrincipale = computed(() => {
-    return supabaseMediaUrl(props.slide.meta.imagePrincipale)    
+    return supabaseMediaUrl(props.slide.meta.imagePrincipale)
 })
 
 </script>
@@ -70,34 +76,42 @@ div>img {
     line-height: 1.1;
     display: flex;
     flex-direction: column;
-    gap:0.5vw
+    gap: 0.5vw
 }
-.texte div p{
+
+.texte div p {
     margin: 0;
 }
 
 .ql-font-monospace {
     font-family: monospace;
 }
+
 .ql-font-sans-serif {
     font-family: sans-serif;
 }
+
 .ql-font-serif {
     font-family: serif;
 }
-.texte div strong{
+
+.texte div strong {
     font-family: 'evelethclean_regular', 'Arial black';
     color: inherit;
 }
-.texte div .ql-size-large{
+
+.texte div .ql-size-large {
     font-size: 2.8vw;
 }
-.texte div .ql-size-huge{
+
+.texte div .ql-size-huge {
     font-size: 3.2vw;
 }
-.texte div .ql-size-small{
+
+.texte div .ql-size-small {
     font-size: 1.5vw;
 }
+
 .texte h1 {
     font-family: 'evelethclean_regular', 'Arial black';
     font-size: 4vw;
@@ -108,5 +122,14 @@ div>img {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+.qr {
+    position: fixed;
+    bottom: 2vw;
+    right: 2vw;
+    width: 10vw;
+    height: 10vw;
+    border: .5vw solid white;
 }
 </style>

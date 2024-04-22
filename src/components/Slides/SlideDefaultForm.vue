@@ -40,7 +40,13 @@
                 </div>
             </div>
         </div>
-
+        <div class="field">
+            <label class="label">Url à afficher en QR code</label>
+            <div class="control">
+                <input class="input" type="url" v-model="data.meta.url" @input="setSlideMeta">
+            </div>
+            <p class="help"></p>
+        </div>
     </div>
 </template>
 <script setup>
@@ -97,6 +103,7 @@ onMounted(() => {
     data.meta.imagePrincipale = props.slide?.meta?.imagePrincipale || ''
     data.meta.image = props.slide?.meta?.image || ''
     data.meta.fit = props.slide?.meta?.fit || 'cover'
+    data.meta.url = props.slide?.meta?.url || ''
     data.meta.backgroundColor = props.slide?.meta?.backgroundColor || '#000000'
 
     quillInstance = new Quill(editor.value, {
