@@ -29,10 +29,10 @@ const texte = computed(() => {
     return props.slide.meta.texte.replaceAll('\n', '<br>');
 })
 const slideImage = computed(() => {
-    return supabaseMediaUrl(props.slide.meta.image)
+    return supabaseMediaUrl(props.slide.meta.image, {w:1600})
 });
 const imagePrincipale = computed(() => {
-    return supabaseMediaUrl(props.slide.meta.imagePrincipale)
+    return supabaseMediaUrl(props.slide.meta.imagePrincipale, {w:500})
 })
 
 </script>

@@ -1,7 +1,7 @@
 <template>
     <div ref="canvasWrapper"></div>
 </template>
-  
+
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 const props = defineProps(['slide']);
@@ -16,7 +16,8 @@ const ctx = canvas.getContext('2d');
 let sti;
 const drawCanvas = () => {
     if (!img.complete) return;
-
+    if(!canvasWrapper.value) return;
+    
     canvas.width = canvasWrapper.value.clientWidth;
     canvas.height = canvasWrapper.value.clientHeight;
 
@@ -71,7 +72,7 @@ onMounted(() => {
         drawCanvas();
     };
 
-    img.src = props.slide.meta.image;
+    img.src = supabaseMediaUrl(props.slide.meta.image, { w: 1600 });
 
     window.addEventListener('resize', drawCanvas);
 });
@@ -81,18 +82,17 @@ onUnmounted(() => {
 });
 
 watch(() => props.slide.meta.image, (newImage) => {
-    img.src = newImage;
+    img.src = supabaseMediaUrl(newImage, { w: 1600 });
 });
 
 watch(() => props.slide.meta.fit, () => {
     drawCanvas();
 });
 </script>
-  
+
 <style scoped>
 div {
     width: 100%;
     height: 100%;
 }
 </style>
-  
