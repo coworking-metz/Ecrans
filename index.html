@@ -20,9 +20,11 @@
 
 </html>
 <script>
-function supabaseMediaUrl(url, query = {}) {
+  function supabaseMediaUrl(url, query = {}) {
+    console.log(url)
+    if (!url) return;
     const baseUrl = url.replace('https://lvsbvjweppdlhmjuqqvt.supabase.co/storage/v1/object/public/', 'https://images.coworking-metz.fr/supabase/');
     const queryStr = new URLSearchParams(query).toString();
     return queryStr ? `${baseUrl}?${queryStr}` : baseUrl;
-}
+  }
 </script>

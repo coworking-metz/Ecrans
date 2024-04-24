@@ -48,11 +48,11 @@
                 </p>
             </template>
             <p class="control">
-                <router-link to="/slides/trash" class="button is-small is-danger">
+                <router-link to="/slides/trash" class="button is-small">
                     <span class="icon is-small">
                         <i class="fas fa-trash"></i>
                     </span>
-                    <span>Corbeille</span>
+                    <span>Voir la corbeille</span>
                 </router-link>
             </p>
         </template>

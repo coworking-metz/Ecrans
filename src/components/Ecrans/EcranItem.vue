@@ -46,7 +46,9 @@ import { computed } from 'vue';
 const props = defineProps(['ecran'])
 
 const ecranImage = computed(() => {
-    return supabaseMediaUrl(props.ecran.image)
+    const image = supabaseMediaUrl(props.ecran.image)
+    if(!image) return '/screen.png'
+    return image;
 })
 function refresh() {
     window.ws.send({ name: "refresh-ecran", id: props.ecran.id });
