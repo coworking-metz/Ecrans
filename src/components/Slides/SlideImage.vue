@@ -1,5 +1,5 @@
 <template>
-    <div ref="canvasWrapper"></div>
+    <div :style="'background-color:' + props.slide.meta.backgroundColor" ref="canvasWrapper"></div>
 </template>
 
 <script setup>
@@ -16,8 +16,8 @@ const ctx = canvas.getContext('2d');
 let sti;
 const drawCanvas = () => {
     if (!img.complete) return;
-    if(!canvasWrapper.value) return;
-    
+    if (!canvasWrapper.value) return;
+
     canvas.width = canvasWrapper.value.clientWidth;
     canvas.height = canvasWrapper.value.clientHeight;
 
@@ -72,7 +72,7 @@ onMounted(() => {
         drawCanvas();
     };
 
-    img.src = supabaseMediaUrl(props.slide.meta.image, { w: 1600 });
+    img.src = supabaseMediaUrl(props.slide.meta.image, { w: 1600, t: props.slide.updated_at });
 
     window.addEventListener('resize', drawCanvas);
 });
