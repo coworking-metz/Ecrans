@@ -45,6 +45,17 @@
             <button class="button is-primary" :class="{ 'is-loading': data.isLoading }">Valider</button>
             <router-link to="/ecrans" class="button is-text">Annuler</router-link>
         </div>
+
+        <nav class="level is-mobile">
+            <div class="level-left">
+                <a class="level-item" @click="deleteEcran">
+                    <span class="icon is-small"><i class="fas fa-trash"></i></span>
+                    Effacer
+                </a>
+            </div>
+        </nav>
+
+
     </form>
 </template>
 <script setup>
@@ -57,6 +68,7 @@ import { useMediasStore } from '@/stores/medias'
 import { useEcransStore } from '@/stores/ecrans'
 import { pageTitle } from '@/utils'
 import supabase from "@/supabase";
+import router from '../router';
 
 
 const data = reactive({
@@ -86,6 +98,15 @@ const imageThumbnail = computed(() => {
 })
 
 
+async function deleteEcran() {
+    if (!confirm('EFfacer cet écran ? Les slides associés ne seront pas effacés')) return;
+    await supabase
+        .from('ecrans')
+        .delete()
+        .eq('id', data.ecran.id);
+    router.push('/')
+
+}
 async function submitForm() {
     window.bus.emit('closeMediaSelector')
     console.log(data)

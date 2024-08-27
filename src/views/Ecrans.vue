@@ -1,6 +1,10 @@
 <template>
 
     <h1 class="title mt-5 ">Liste des écrans disponibles</h1>
+
+
+    <EcranItem v-for="ecran in ecransStore.ecrans" :ecran="ecran" />
+
     <div class="field has-addons mb-5">
         <p class="control">
             <button class="button is-small is-success" @click="newEcran">
@@ -11,8 +15,6 @@
             </button>
         </p>
     </div>
-
-    <EcranItem v-for="ecran in ecransStore.ecrans" :ecran="ecran" />
 </template>
 <script setup>
 import { useEcransStore } from '@/stores/ecrans'
