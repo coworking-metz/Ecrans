@@ -26,6 +26,7 @@ import { computed, ref } from 'vue'
 const props = defineProps(['slide'])
 
 const texte = computed(() => {
+    if(!props.slide.meta.texte) return ''
     return props.slide.meta.texte.replaceAll('\n', '<br>');
 })
 const slideImage = computed(() => {

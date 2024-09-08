@@ -11,6 +11,7 @@ export const useSlidesStore = defineStore("slides", {
     types: [
       // { name: "Evenement", slug: "event" },
       { name: "Image", slug: "image" },
+      { name: "Vidéo", slug: "video" },
       { name: "Url", slug: "url" },
       { name: "Défaut", slug: "default" },
     ],

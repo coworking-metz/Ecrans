@@ -68,6 +68,7 @@
         <hr>
         <SlideDefaultForm v-if="data.slide.type == 'default'" :slide="data.slide" />
         <SlideImageForm v-if="data.slide.type == 'default' || data.slide.type == 'image'" :slide="data.slide" />
+        <SlideVideoForm v-if="data.slide.type == 'video'" :slide="data.slide" />
         <SlideUrlForm v-if="data.slide.type == 'url'" :slide="data.slide" />
         <hr>
         <div class="buttons validation-bar">
@@ -83,6 +84,7 @@
 import SlidePreview from '@/components/Slides/SlidePreview.vue'
 import SlideUrlForm from '@/components/Slides/SlideUrlForm.vue'
 import SlideImageForm from '@/components/Slides/SlideImageForm.vue'
+import SlideVideoForm from '@/components/Slides/SlideVideoForm.vue'
 import SlideDefaultForm from '@/components/Slides/SlideDefaultForm.vue'
 import { onMounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'

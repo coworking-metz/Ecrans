@@ -1,7 +1,7 @@
 <template>
     <form ref="form" @submit.prevent="mediaUpload" enctype="multipart/form-data">
         <div class="file">
-            <button v-if="data.isLoading" class="button is-loading">Ajouter une ou plusieurs images</button>
+            <button v-if="data.isLoading" class="button is-loading">Ajouter des fichiers</button>
             <label v-else class="file-label">
                 <input class="file-input" type="file" multiple="true" ref="mediaFile" @input="mediaUpload">
                 <span class="file-cta">
@@ -9,7 +9,7 @@
                         <i class="fas fa-upload"></i>
                     </span>
                     <span class="file-label">
-                        Ajouter une ou plusieurs images
+                        Ajouter des fichiers
                     </span>
                 </span>
             </label>
@@ -23,7 +23,7 @@ import { ref, reactive } from 'vue'
 const props = defineProps(['name'])
 const mediasStore = useMediasStore();
 
-const validImageTypes = ['image/webp', 'image/svg+xml', 'image/jpeg', 'image/png', 'image/gif', 'image/avif'];
+const validMediaTypes = ['video/mp4','image/webp', 'image/svg+xml', 'image/jpeg', 'image/png', 'image/gif', 'image/avif'];
 const thumbnailsImageTypes = ['image/webp', 'image/jpeg', 'image/png', 'image/gif', 'image/avif'];
 const form = ref(null);
 const mediaFile = ref(null);
@@ -39,8 +39,8 @@ async function mediaUpload() {
     const files = mediaFile.value.files;
     data.isLoading = true;
     for (const file of files) {
-        if (!validImageTypes.includes(file.type)) {
-            return alert(`Format de fichier non autorisé pour ${file.name}`);
+        if (!validMediaTypes.includes(file.type)) {
+            return alert(`Format de fichier ${file.type} non autorisé pour ${file.name}`);
         }
         const { data, error } = await supabase.storage
             .from('medias')

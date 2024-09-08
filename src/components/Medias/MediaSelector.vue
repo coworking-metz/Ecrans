@@ -10,7 +10,7 @@
 
         </template>
         <template v-else>
-            <label class="label">Sélectionner unne image</label>
+            <label class="label">Sélectionner un media</label>
             <div class="control">
                 <MediaUpload :name="props.name"/>
 
