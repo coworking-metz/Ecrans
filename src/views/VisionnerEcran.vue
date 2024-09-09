@@ -47,9 +47,11 @@ const slides = computed(() => {
     if (data.ecran.slideSort) {
         const out = sortSlidesByIds(tmpSlides, data.ecran.slideSort);
         const actifs = out.filter(slide => slide.active);
-        console.log(actifs);
         return actifs;
-    } else return tmpSlides;
+    } else {
+        const actifs = tmpSlides.filter(slide => slide.active);
+        return actifs;
+    }
 
 })
 
