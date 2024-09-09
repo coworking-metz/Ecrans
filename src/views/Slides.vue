@@ -208,7 +208,7 @@ async function getnbSlidesVides() {
 
 
 window.bus.on('update-sort', args => {
-    const slideSort = data.ecran.slideSort;
+    const slideSort = data.ecran.slideSort || [];
 
     if (!slideSort) {
         slideSort = []
