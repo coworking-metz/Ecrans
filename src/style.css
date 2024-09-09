@@ -54,17 +54,17 @@ span[class] {}
 }
 
 
-._validation-bar {
+.validation-bar {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
+    bottom: -5px;
+    right: -5px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 1rem;
     background-color: white;
     z-index: 9999;
+    margin: 0 !important;
 }
 
 

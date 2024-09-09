@@ -71,13 +71,13 @@
         <SlideVideoForm v-if="data.slide.type == 'video'" :slide="data.slide" />
         <SlideUrlForm v-if="data.slide.type == 'url'" :slide="data.slide" />
         <hr>
-        <div class="buttons validation-bar">
+        <div class="buttons validation-bar box">
             <button class="button is-primary" :class="{ 'is-loading': data.isLoading }">Valider</button>
             <router-link to="/slides" class="button is-text">Annuler</router-link>
         </div>
         <p><small>Créé le {{ formatDateToFrench(data.slide.created_at) }} / Dernière modification le {{
                 formatDateToFrench(data.slide.updated_at) }}</small></p>
-
+    <p></p>
     </form>
 </template>
 <script setup>

@@ -6,7 +6,7 @@
                 :style="'object-fit:' + props.slide.meta.fit + ';opacity:' + props.slide.meta.opacity">
 
             <div class="contenu">
-                <div class="image"><img :src="imagePrincipale"></div>
+                <div class="image"><img :src="imagePrincipale" v-if="imagePrincipale"></div>
                 <div class="texte" :style="'color:' + props.slide.meta.color">
                     <h1>{{ props.slide.meta.titre }}</h1>
                     <div v-html="texte"></div>
@@ -26,14 +26,14 @@ import { computed, ref } from 'vue'
 const props = defineProps(['slide'])
 
 const texte = computed(() => {
-    if(!props.slide.meta.texte) return ''
+    if (!props.slide.meta.texte) return ''
     return props.slide.meta.texte.replaceAll('\n', '<br>');
 })
 const slideImage = computed(() => {
-    return supabaseMediaUrl(props.slide.meta.image, {w:1600})
+    return supabaseMediaUrl(props.slide.meta.image, { w: 1600 })
 });
 const imagePrincipale = computed(() => {
-    return supabaseMediaUrl(props.slide.meta.imagePrincipale, {w:500})
+    return supabaseMediaUrl(props.slide.meta.imagePrincipale, { w: 500 })
 })
 
 </script>
