@@ -16,7 +16,7 @@
 
 
             <div class="qr" v-if="props.slide.meta.url">
-                <img :src="'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + props.slide.meta.url">
+                <img :src="'https://tools.coworking-metz.fr/qr/?url=' + props.slide.meta.url">
             </div>
         </div>
     </template>
