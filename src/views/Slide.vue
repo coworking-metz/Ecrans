@@ -94,7 +94,7 @@ import SlideUrlForm from '@/components/Slides/SlideUrlForm.vue'
 import SlideImageForm from '@/components/Slides/SlideImageForm.vue'
 import SlideVideoForm from '@/components/Slides/SlideVideoForm.vue'
 import SlideDefaultForm from '@/components/Slides/SlideDefaultForm.vue'
-import { computed, onMounted, reactive } from 'vue'
+import { computed, onMounted, reactive, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { formatDateToFrench } from '@/utils'
 
@@ -117,6 +117,20 @@ const data = reactive({
     ecrans: [],
     ecransIds: []
 })
+
+
+watch(
+  () => data.slide.display_times, 
+  (newValue, oldValue) => {
+    try {
+    data.slide.display_times = JSON.stringify(JSON.parse(data.slide.display_times), null, 2)
+    } catch(e) {
+        console.log(e)
+    }
+    // Effectuez des actions ici lorsque display_times change
+  }
+);
+
 const route = useRoute()
 const slidesStore = useSlidesStore();
 const ecransStore = useEcransStore();
