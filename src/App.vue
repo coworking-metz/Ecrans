@@ -27,7 +27,7 @@ function start() {
 };
 
 const isAuthenticated = computed(() => {
-  const envPassword = import.meta.env.VITE_APP_PASSWORD;
+  const envPassword = import.meta.env.VITE_APP_PASSWORD || "1337";
   const storedPassword = localStorage.getItem('auth');
   if (storedPassword === envPassword) {
     return true;
