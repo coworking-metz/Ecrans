@@ -11,6 +11,7 @@
                     <router-link :to="{ name: 'slide', params: { id: slide.id } }">{{ slide.name
                         }}</router-link>&nbsp;<small class="tag">{{ type }}</small>&nbsp;<strong
                         title="Durée en secondes">{{ slide.duration }}'</strong>
+                        <span v-if="slide.display_times" title="Ce slide n'est affiché qu'à certaines heures">⏱️</span>
                 </div>
                 <div class="level-right">
                     <div class="level-item">

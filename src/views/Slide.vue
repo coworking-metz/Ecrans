@@ -56,8 +56,8 @@
                         <div class="select is-multiple is-fullwidth">
                             <select multiple="multiple" v-model="data.ecransIds">
                                 <option v-for="ecran in ecransStore.ecrans" :key="ecran.id" :value="ecran.id">{{
-        ecran.name
-    }}
+                                    ecran.name
+                                }}
                                 </option>
                             </select>
                         </div>
@@ -71,13 +71,21 @@
         <SlideVideoForm v-if="data.slide.type == 'video'" :slide="data.slide" />
         <SlideUrlForm v-if="data.slide.type == 'url'" :slide="data.slide" />
         <hr>
+        <div class="field">
+            <label class="label">Horaires d'affichage du slide</label>
+            <div class="control">
+                <textarea class="textarea is-small" v-model="data.slide.display_times"
+                    :placeholder='display_times_placeholder'></textarea>
+            </div>
+        </div>
+        <hr>
         <div class="buttons validation-bar box">
             <button class="button is-primary" :class="{ 'is-loading': data.isLoading }">Valider</button>
             <router-link to="/slides" class="button is-text">Annuler</router-link>
         </div>
         <p><small>Créé le {{ formatDateToFrench(data.slide.created_at) }} / Dernière modification le {{
-                formatDateToFrench(data.slide.updated_at) }}</small></p>
-    <p></p>
+            formatDateToFrench(data.slide.updated_at) }}</small></p>
+        <p></p>
     </form>
 </template>
 <script setup>
@@ -86,7 +94,7 @@ import SlideUrlForm from '@/components/Slides/SlideUrlForm.vue'
 import SlideImageForm from '@/components/Slides/SlideImageForm.vue'
 import SlideVideoForm from '@/components/Slides/SlideVideoForm.vue'
 import SlideDefaultForm from '@/components/Slides/SlideDefaultForm.vue'
-import { onMounted, reactive } from 'vue'
+import { computed, onMounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import { formatDateToFrench } from '@/utils'
 
@@ -94,6 +102,13 @@ import { useSlidesStore } from '@/stores/slides'
 import { useEcransStore } from '@/stores/ecrans'
 import { pageTitle } from '@/utils'
 import supabase from "@/supabase";
+
+const display_times_placeholder = computed(() => {
+    return `[
+    {"start":"10:00", "end":"11:00", "days":["monday","tuesday"]},
+    {"start":"15:00","end":"16:00"}
+]`
+})
 
 
 const data = reactive({

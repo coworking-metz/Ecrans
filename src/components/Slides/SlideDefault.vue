@@ -1,6 +1,6 @@
 <template>
     <template v-if="props.slide.meta">
-        <div :style="'background:' + props.slide.meta.backgroundColor">
+        <div :style="'position:relative;background:' + props.slide.meta.backgroundColor">
 
             <img :src="slideImage"
                 :style="'object-fit:' + props.slide.meta.fit + ';opacity:' + props.slide.meta.opacity">

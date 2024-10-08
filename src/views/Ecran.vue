@@ -39,7 +39,30 @@
                 </div>
             </div>
         </div>
+        <label class="checkbox">
+            <input type="checkbox" v-model="data.ecran.show_side" />
+            Afficher une barre latérale sur cet écran
+        </label>
 
+        <template v-if="data.ecran.show_side">
+            <div class="field">
+                <label class="label">Url de la barre latérale</label>
+                <p class="control has-icons-left">
+                    <input class="input" type="url" placeholder="Url de la page" v-model="data.ecran.side_url">
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-globe"></i>
+                    </span>
+                </p>
+            </div>
+
+            <div class="field">
+                <label class="label">Heures d'affichages de la barre latérale</label>
+                <div class="control">
+                    <textarea class="textarea is-small" v-model="data.ecran.side_times"
+                        :placeholder='slide_times_placeholder'></textarea>
+                </div>
+            </div>
+        </template>
         <hr>
         <div class="buttons validation-bar">
             <button class="button is-primary" :class="{ 'is-loading': data.isLoading }">Valider</button>
@@ -79,6 +102,12 @@ const route = useRoute()
 const ecransStore = useEcransStore();
 const mediasStore = useMediasStore();
 
+const slide_times_placeholder = computed(() => {
+    return `[
+    {"start":"10:00", "end":"11:00", "days":["monday","tuesday"]},
+    {"start":"15:00", "end":"16:00"}
+]`
+})
 onMounted(async () => {
 
 

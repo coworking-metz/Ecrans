@@ -75,22 +75,31 @@ span[class] {}
     background-color: transparent;
     z-index: 999
 }
-
-.visionner .slides {
+.visionner {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
     background-color: black;
+    display: flex;
+}
+.visionner .side {
+    position: relative;
+    width: 20vw;
+    background-color: white;
+}
+
+.visionner .slides {
+    position: relative;
 }
 
 .visionner .slide {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
 }
 
 .v-enter-active,

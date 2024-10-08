@@ -11,6 +11,7 @@
             </template>
 
         </div>
+        <iframe v-if="show_side" :src="data.ecran.side_url" class="side"></iframe>
     </div>
 </template>
 <script setup>
@@ -20,7 +21,7 @@ import supabase from "@/supabase";
 
 import { useEcransStore } from '@/stores/ecrans'
 import { useSlidesStore } from '@/stores/slides'
-import { pageTitle } from '@/utils'
+import { pageTitle, isInTimeRange } from '@/utils'
 import SlideRender from '@/components/Slides/SlideRender.vue';
 const route = useRoute()
 const ecransStore = useEcransStore();
@@ -36,6 +37,13 @@ const data = reactive({
     updated_at: false
 })
 
+const show_side = computed(() => {
+    if (!data.ecran.show_side) return;
+
+    if (!isInTimeRange(data.ecran.side_times)) return;
+
+    return true;
+})
 const slides = computed(() => {
     const ids = [];
     slidesStore.liens.forEach(lien => {
@@ -43,7 +51,12 @@ const slides = computed(() => {
             ids.push(lien.slide_id);
         }
     })
-    const tmpSlides = slidesStore.slides.filter(slide => ids.includes(slide.id))
+    const tmpSlides = slidesStore.slides.filter(slide => {
+        if (!ids.includes(slide.id)) return;
+        if (!isInTimeRange(slide.display_times)) return;
+
+        return true;
+    })
     if (data.ecran.slideSort) {
         const out = sortSlidesByIds(tmpSlides, data.ecran.slideSort);
         const actifs = out.filter(slide => slide.active);
