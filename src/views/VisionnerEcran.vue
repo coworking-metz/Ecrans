@@ -1,5 +1,7 @@
 <template>
     <div class="visionner" v-if="data.ecran">
+        <iframe v-if="show_side" :src="data.ecran.side_url" class="side"></iframe>
+
         <div class="slides">
 
             <template v-for="slide in slides" :key="slide.id">
@@ -11,7 +13,6 @@
             </template>
 
         </div>
-        <iframe v-if="show_side" :src="data.ecran.side_url" class="side"></iframe>
     </div>
 </template>
 <script setup>
