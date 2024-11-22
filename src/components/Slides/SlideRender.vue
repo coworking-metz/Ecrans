@@ -11,10 +11,12 @@
     <template v-if="slide.type == 'default'">
         <SlideDefault :slide="slide" />
     </template>
+    <SlideDuration :duration="slide.duration"></SlideDuration>
 </template>
 <script setup>
 import { onMounted } from 'vue';
 
+import SlideDuration from '@/components/Slides/SlideDuration.vue';
 import SlideImage from '@/components/Slides/SlideImage.vue';
 import SlideVideo from '@/components/Slides/SlideVideo.vue';
 import SlideUrl from '@/components/Slides/SlideUrl.vue';
