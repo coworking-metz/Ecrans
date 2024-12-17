@@ -81,6 +81,7 @@ const appReady = computed(() => {
     <template v-else>
       <form class="login">
         <input type="password" v-model="data.password" placeholder="Enter password" />
+        <p>Entrer le code de la boîte à clé de la réserve.</p>
         <!-- <button type="submit">Submit</button> -->
       </form>
     </template>

@@ -64,6 +64,27 @@
             </div>
         </template>
         <hr>
+        <label class="checkbox">
+            <input type="checkbox" v-model="data.ecran.playlist_on" />
+            Diffuser une playlist
+        </label>
+        <template v-if="data.ecran.playlist_on">
+            <div class="field">
+                <label class="label">Morceaux à diffuser</label>
+                <div class="control">
+                    <textarea class="textarea is-small" v-model="data.ecran.playlist"></textarea>
+                </div>
+                <small>Liste d'urls vers fichiers mp3, un par ligne</small>
+            </div>
+
+            <div class="field">
+                <label class="label">Volume de la playlist</label>
+                <input type="range" step="5" min="0" max="100" v-model="data.ecran.playlist_volume" @input="updateVolume" />
+                <p v-if="data.ecran.playlist_volume">{{ data.ecran.playlist_volume }}%</p>
+            </div>
+        </template>
+
+        <hr>
         <div class="buttons validation-bar">
             <button class="button is-primary" :class="{ 'is-loading': data.isLoading }">Valider</button>
             <router-link to="/ecrans" class="button is-text">Annuler</router-link>
@@ -112,7 +133,10 @@ onMounted(async () => {
 
 
     data.ecran = await ecransStore.getEcran(route.params.id)
-
+    // Définit le volume par défaut
+    if (!data.ecran.playlist_volume) {
+        data.ecran.playlist_volume = 50; // 50% par défaut
+    }
 
 });
 
@@ -126,7 +150,14 @@ const imageThumbnail = computed(() => {
     return supabaseMediaUrl(data.ecran.image.replace('medias/medias/', 'medias/thumbnails/'))
 })
 
-
+/**
+ * Met à jour le volume du lecteur audio
+ */
+function updateVolume() {
+    if (audioPlayer.value) {
+        audioPlayer.value.playlist_volume = data.ecran.playlist_volume / 100;
+    }
+}
 async function deleteEcran() {
     if (!confirm('EFfacer cet écran ? Les slides associés ne seront pas effacés')) return;
     await supabase

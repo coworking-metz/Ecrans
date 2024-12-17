@@ -1,4 +1,5 @@
 <template>
+    <audio ref="audioPlayer" style="display: none;"></audio>
     <div class="visionner" v-if="data.ecran">
         <iframe v-if="show_side" :src="data.ecran.side_url" class="side"></iframe>
 
@@ -16,7 +17,7 @@
     </div>
 </template>
 <script setup>
-import { onMounted, reactive, computed } from 'vue'
+import { onMounted, reactive, computed, watch, ref} from 'vue'
 import { useRoute } from 'vue-router'
 import supabase from "@/supabase";
 
@@ -37,7 +38,7 @@ const data = reactive({
     ecran: false,
     updated_at: false
 })
-
+const audioPlayer = ref(null) // Référence vers le lecteur audio
 const show_side = computed(() => {
     if (!data.ecran.show_side) return;
 
@@ -78,7 +79,62 @@ function sortSlidesByIds(slides, ids) {
 
 
 
+watch(() => data.ecran, (newVal, oldVal) => {
+    if(!data.ecran.playlist_on) return;
+    if(!data.ecran.playlist) return;
+    const playlist = data.ecran.playlist.split("\n").map(url => url.trim())
+    console.log({ playlist })
+    setupPlaylist(playlist)
+})
 
+
+/**
+ * Fonction pour configurer la playlist
+ */
+ function setupPlaylist(playlist) {
+
+    if (playlist.length > 0) {
+        // Mélange aléatoire des URLs
+        const shuffledPlaylist = shuffleArray(playlist);
+        console.log({shuffledPlaylist})
+        // Configure et démarre la lecture
+        playPlaylist(shuffledPlaylist);
+    }
+}
+
+/**
+ * Fonction pour lire la playlist aléatoire
+ * @param {Array} playlist - Liste des URLs MP3
+ */
+ function playPlaylist(playlist) {
+    let currentIndex = 0;
+
+    // Fonction pour jouer la piste actuelle
+    function playNext() {
+        if (currentIndex < playlist.length) {
+            audioPlayer.value.src = playlist[currentIndex];
+            audioPlayer.value.play();
+            currentIndex++;
+        } else {
+            // Redémarrer la playlist une fois terminée
+            currentIndex = 0;
+            playNext();
+        }
+    }
+    // Événement lorsque la piste est terminée
+    audioPlayer.value.addEventListener('ended', playNext);
+    audioPlayer.value.volume = parseFloat(data.ecran.playlist_volume/100); 
+    // Démarre la première piste
+    playNext();
+}
+/**
+ * Mélange un tableau
+ * @param {Array} array - Tableau à mélanger
+ * @returns {Array} - Tableau mélangé
+ */
+ function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+}
 onMounted(() => {
     chargerEcran();
     pageTitle('Visionner', data.ecran.name);
