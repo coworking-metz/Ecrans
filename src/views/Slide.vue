@@ -57,7 +57,7 @@
                             <select multiple="multiple" v-model="data.ecransIds">
                                 <option v-for="ecran in ecransStore.ecrans" :key="ecran.id" :value="ecran.id">{{
                                     ecran.name
-                                }}
+                                    }}
                                 </option>
                             </select>
                         </div>
@@ -77,6 +77,53 @@
                 <textarea class="textarea is-small" v-model="data.slide.display_times"
                     :placeholder='display_times_placeholder'></textarea>
             </div>
+            <a @click="data.voirAide=true" v-if="!data.voirAide">❔ Aide sur la saisie des horaires</a>
+            <div v-else>
+                <br>
+                <h3>🕒 Horaires d'affichage du slide</h3>
+                <p>Utilisez le format JSON suivant pour spécifier les plages horaires pendant lesquelles le contenu doit
+                    être
+                    affiché.</p>
+
+                <pre>
+        [
+            {
+                "weekNumberIs": "even", // "even" pour semaines paires, "odd" pour semaines impaires, ou un numéro de
+            semaine spécifique (ex: 12)
+            },
+            {
+                "days": ["monday", "tuesday"], // Jours de la semaine en anglais (facultatif, par défaut tous les jours)
+                "start": "08:30", // Heure de début au format HH:MM
+                "end": "18:00" // Heure de fin au format HH:MM
+            }
+        ]
+        </pre>
+
+                <h4>📌 Explications des paramètres :</h4>
+                <ul>
+                    <li><strong>weekNumberIs</strong> : Détermine si l'affichage doit être restreint aux semaines paires
+                        ("even"), impaires ("odd") ou un numéro de semaine précis.</li>
+                    <li><strong>days</strong> (optionnel) : Liste des jours où l'affichage est autorisé (ex : "monday",
+                        "tuesday").</li>
+                    <li><strong>start</strong> : Heure de début de l'affichage (format 24h : "HH:MM").</li>
+                    <li><strong>end</strong> : Heure de fin de l'affichage (format 24h : "HH:MM").</li>
+                </ul>
+
+                <h4>✅ Exemple valide :</h4>
+                <pre>
+        [
+            {
+                "weekNumberIs": "odd",
+                "days": ["monday", "wednesday", "friday"],
+                "start": "09:00",
+                "end": "12:30"
+            }
+        ]
+        </pre>
+
+                <p>Si aucun paramètre n'est renseigné, le contenu sera affiché en permanence.</p>
+            </div>
+
         </div>
         <hr>
         <div class="buttons validation-bar box">
@@ -115,20 +162,21 @@ const data = reactive({
     slide: false,
     isLoading: false,
     ecrans: [],
-    ecransIds: []
+    ecransIds: [],
+    voirAide: false
 })
 
 
 watch(
-  () => data.slide.display_times, 
-  (newValue, oldValue) => {
-    try {
-    data.slide.display_times = JSON.stringify(JSON.parse(data.slide.display_times), null, 2)
-    } catch(e) {
-        console.log(e)
+    () => data.slide.display_times,
+    (newValue, oldValue) => {
+        try {
+            data.slide.display_times = JSON.stringify(JSON.parse(data.slide.display_times), null, 2)
+        } catch (e) {
+            console.log(e)
+        }
+        // Effectuez des actions ici lorsque display_times change
     }
-    // Effectuez des actions ici lorsque display_times change
-  }
 );
 
 const route = useRoute()

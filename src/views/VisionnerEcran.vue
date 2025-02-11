@@ -17,7 +17,7 @@
     </div>
 </template>
 <script setup>
-import { onMounted, reactive, computed, watch, ref} from 'vue'
+import { onMounted, reactive, computed, watch, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import supabase from "@/supabase";
 
@@ -53,21 +53,23 @@ const slides = computed(() => {
             ids.push(lien.slide_id);
         }
     })
-    const tmpSlides = slidesStore.slides.filter(slide => {
+    const tmpSlides = slidesStore.slides;
+    let actifs;
+    if (data.ecran.slideSort) {
+        const out = sortSlidesByIds(tmpSlides, data.ecran.slideSort);
+        actifs = out.filter(slide => slide.active);
+    } else {
+        actifs = tmpSlides.filter(slide => slide.active);
+    }
+
+    const out = actifs.filter(slide => {
         if (!ids.includes(slide.id)) return;
         if (!isInTimeRange(slide.display_times)) return;
 
         return true;
     })
-    if (data.ecran.slideSort) {
-        const out = sortSlidesByIds(tmpSlides, data.ecran.slideSort);
-        const actifs = out.filter(slide => slide.active);
-        return actifs;
-    } else {
-        const actifs = tmpSlides.filter(slide => slide.active);
-        return actifs;
-    }
-
+    console.log( out.length, 'slides actifs')
+    return out;
 })
 
 function sortSlidesByIds(slides, ids) {
@@ -80,8 +82,8 @@ function sortSlidesByIds(slides, ids) {
 
 
 watch(() => data.ecran, (newVal, oldVal) => {
-    if(!data.ecran.playlist_on) return;
-    if(!data.ecran.playlist) return;
+    if (!data.ecran.playlist_on) return;
+    if (!data.ecran.playlist) return;
     const playlist = data.ecran.playlist.split("\n").map(url => url.trim())
     console.log({ playlist })
     setupPlaylist(playlist)
@@ -91,12 +93,12 @@ watch(() => data.ecran, (newVal, oldVal) => {
 /**
  * Fonction pour configurer la playlist
  */
- function setupPlaylist(playlist) {
+function setupPlaylist(playlist) {
 
     if (playlist.length > 0) {
         // Mélange aléatoire des URLs
         const shuffledPlaylist = shuffleArray(playlist);
-        console.log({shuffledPlaylist})
+        console.log({ shuffledPlaylist })
         // Configure et démarre la lecture
         playPlaylist(shuffledPlaylist);
     }
@@ -106,7 +108,7 @@ watch(() => data.ecran, (newVal, oldVal) => {
  * Fonction pour lire la playlist aléatoire
  * @param {Array} playlist - Liste des URLs MP3
  */
- function playPlaylist(playlist) {
+function playPlaylist(playlist) {
     let currentIndex = 0;
 
     // Fonction pour jouer la piste actuelle
@@ -123,7 +125,7 @@ watch(() => data.ecran, (newVal, oldVal) => {
     }
     // Événement lorsque la piste est terminée
     audioPlayer.value.addEventListener('ended', playNext);
-    audioPlayer.value.volume = parseFloat(data.ecran.playlist_volume/100); 
+    audioPlayer.value.volume = parseFloat(data.ecran.playlist_volume / 100);
     // Démarre la première piste
     playNext();
 }
@@ -132,7 +134,7 @@ watch(() => data.ecran, (newVal, oldVal) => {
  * @param {Array} array - Tableau à mélanger
  * @returns {Array} - Tableau mélangé
  */
- function shuffleArray(array) {
+function shuffleArray(array) {
     return array.sort(() => Math.random() - 0.5);
 }
 onMounted(() => {
@@ -140,7 +142,7 @@ onMounted(() => {
     pageTitle('Visionner', data.ecran.name);
     // await loadSlides();
     window.bus.emit('loadSlides');
-    avancer();
+    doAvancer();
     handleShortcuts()
 
 });
@@ -159,7 +161,7 @@ window.bus.on('refresh-ecran', payload => {
 window.bus.on('avancer-ecran', payload => {
     if (payload?.id == data.ecran?.id) {
         clearTimeout(timeout);
-        avancer()
+        doAvancer()
     }
 })
 function chargerEcran() {
@@ -167,7 +169,8 @@ function chargerEcran() {
     data.ecran = response;
     console.log('chargerEcran', slides.value.length, 'slides')
 }
-function avancer(delta = 1) {
+function doAvancer(delta = 1) {
+    console.log('avancer', delta)
     data.currentSlide = slides.value[data.index];
     // console.log(slides.value, data.index)
     data.index += delta;
@@ -177,7 +180,7 @@ function avancer(delta = 1) {
     }
 
     const duration = (data.currentSlide?.duration || 0) * 1000;
-    timeout = setTimeout(avancer, duration);
+    timeout = setTimeout(doAvancer, duration);
 }
 
 
@@ -187,13 +190,12 @@ function handleShortcuts() {
     document.body.addEventListener('keyup', (e) => {
         console.log(e.code);
         if (e.code == 'ArrowRight') {
+            doAvancer(1)
             clearTimeout(timeout);
-            avancer(1)
         } else
             if (e.code == 'ArrowLeft') {
-
+                doAvancer(-1)
                 clearTimeout(timeout);
-                avancer(-1)
             }
 
     })
