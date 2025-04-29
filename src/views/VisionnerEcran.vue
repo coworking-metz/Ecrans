@@ -52,7 +52,8 @@ const slides = computed(() => {
         if (lien.ecran_id == data.ecran.id) {
             ids.push(lien.slide_id);
         }
-    })
+    });
+
     const tmpSlides = slidesStore.slides;
     let actifs;
     if (data.ecran.slideSort) {
@@ -62,15 +63,25 @@ const slides = computed(() => {
         actifs = tmpSlides.filter(slide => slide.active);
     }
 
+    const now = new Date();
+
     const out = actifs.filter(slide => {
-        if (!ids.includes(slide.id)) return;
-        if (!isInTimeRange(slide.display_times)) return;
+        if (!ids.includes(slide.id)) return false;
+        if (!isInTimeRange(slide.display_times)) return false;
+
+        const publicationDate = slide.publication ? new Date(slide.publication) : null;
+        const expirationDate = slide.expiration ? new Date(slide.expiration) : null;
+
+        if (publicationDate && publicationDate > now) return false;
+        if (expirationDate && expirationDate < now) return false;
 
         return true;
-    })
-    console.log( out.length, 'slides actifs')
+    });
+
+    console.log(out.length, 'slides actifs');
     return out;
-})
+});
+
 
 function sortSlidesByIds(slides, ids) {
     const slidesMap = new Map(slides.map(slide => [slide.id, slide]));
