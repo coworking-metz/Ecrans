@@ -174,7 +174,6 @@ onMounted(() => {
 })
 
 function setSlideMeta() {
-  data.meta.emojiPrincipal = sanitizeEmojiPrincipal(data.meta.emojiPrincipal || '');
   window.bus.emit('setSlideMeta', data.meta);
 }
 </script>
