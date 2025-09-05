@@ -9,9 +9,9 @@
 
         <MediaSelector name="image" />
     </div>
-    <template v-if="data.meta.image">
+    <!-- <template v-if="data.meta.image"> -->
         <div class="columns">
-            <div class="column">
+            <div class="column" v-if="data.meta.image">
                 <div class="field">
                     <label class="label">Ajustement</label>
                     <div class="control">
@@ -25,7 +25,7 @@
                 </div>
 
             </div>
-            <div class="column">
+            <div class="column" v-if="data.meta.image">
                 <div class="field">
                     <label class="label">Opacité</label>
                     <span>{{ data.meta.opacity * 100 }}%</span>
@@ -36,7 +36,7 @@
 
             </div>
             <div class="column">
-                <div class="field" v-if="data.meta.fit == 'contain' || data.meta.opacity != 1">
+                <div class="field" v-if="!data.meta.image || data.meta.fit == 'contain' || data.meta.opacity != 1">
                     <label class="label">Couleur de fond</label>
                     <div class="control">
                         <input type="color" class="input" @input="setSlideMeta" v-model="data.meta.backgroundColor">
@@ -45,7 +45,7 @@
                 </div>
             </div>
         </div>
-    </template>
+    <!-- </template> -->
 </template>
 <script setup>
 import MediaSelector from '@/components/Medias/MediaSelector.vue'
@@ -71,7 +71,7 @@ onMounted(() => {
     data.meta.opacity = props.slide?.meta?.opacity || 1
     data.meta.image = props.slide?.meta?.image || ''
     data.meta.fit = props.slide?.meta?.fit || 'cover'
-    data.meta.backgroundColor = props.slide?.meta?.backgroundColor || '#000000'
+    data.meta.backgroundColor = props.slide?.meta?.backgroundColor
 })
 
 function setSlideMeta() {

@@ -30,10 +30,7 @@
               <div class="control">
                 <div class="select">
                   <select v-model="data.slide.type">
-                    <template
-                      v-for="typeSlide in slidesStore.types"
-                      :key="typeSlide.slug"
-                    >
+                    <template v-for="typeSlide in slidesStore.types" :key="typeSlide.slug">
                       <option :value="typeSlide.slug">
                         {{ typeSlide.name }}
                       </option>
@@ -47,11 +44,7 @@
             <div class="field">
               <label class="label">Durée du slide</label>
               <div class="control">
-                <input
-                  class="input"
-                  type="text"
-                  v-model="data.slide.duration"
-                />
+                <input class="input" type="text" v-model="data.slide.duration" />
               </div>
               <p class="help">Durée d'affichage du slide en secondes</p>
             </div>
@@ -87,11 +80,7 @@
           <div class="control">
             <div class="select is-multiple is-fullwidth">
               <select multiple="multiple" v-model="data.ecransIds">
-                <option
-                  v-for="ecran in ecransStore.ecrans"
-                  :key="ecran.id"
-                  :value="ecran.id"
-                >
+                <option v-for="ecran in ecransStore.ecrans" :key="ecran.id" :value="ecran.id">
                   {{ ecran.name }}
                 </option>
               </select>
@@ -102,25 +91,17 @@
     </div>
     <hr />
     <SlideDefaultForm v-if="data.slide.type == 'default'" :slide="data.slide" />
-    <SlideImageForm
-      v-if="data.slide.type == 'default' || data.slide.type == 'image'"
-      :slide="data.slide"
-    />
+    <SlideImageForm v-if="data.slide.type == 'default' || data.slide.type == 'image'" :slide="data.slide" />
     <SlideVideoForm v-if="data.slide.type == 'video'" :slide="data.slide" />
     <SlideUrlForm v-if="data.slide.type == 'url'" :slide="data.slide" />
     <hr />
     <div class="field">
       <label class="label">Horaires d'affichage du slide</label>
       <div class="control">
-        <textarea
-          class="textarea is-small"
-          v-model="data.slide.display_times"
-          :placeholder="display_times_placeholder"
-        ></textarea>
+        <textarea class="textarea is-small" v-model="data.slide.display_times"
+          :placeholder="display_times_placeholder"></textarea>
       </div>
-      <a @click="data.voirAide = true" v-if="!data.voirAide"
-        >❔ Aide sur la saisie des horaires</a
-      >
+      <a @click="data.voirAide = true" v-if="!data.voirAide">❔ Aide sur la saisie des horaires</a>
       <div v-else>
         <br />
         <h3>🕒 Horaires d'affichage du slide</h3>
@@ -130,18 +111,18 @@
         </p>
 
         <pre>
-            [
-            {
-            "weekNumberIs": "even", // "even" pour semaines paires, "odd" pour semaines impaires, ou un numéro de
-            semaine spécifique (ex: 12)
-            },
-            {
-            "days": ["monday", "tuesday"], // Jours de la semaine en anglais (facultatif, par défaut tous les jours)
-            "start": "08:30", // Heure de début au format HH:MM
-            "end": "18:00" // Heure de fin au format HH:MM
-            }
-            ]
-        </pre>
+      [
+      {
+      "weekNumberIs": "even", // "even" pour semaines paires, "odd" pour semaines impaires, ou un numéro de
+      semaine spécifique (ex: 12)
+      },
+      {
+      "days": ["monday", "tuesday"], // Jours de la semaine en anglais (facultatif, par défaut tous les jours)
+      "start": "08:30", // Heure de début au format HH:MM
+      "end": "18:00" // Heure de fin au format HH:MM
+      }
+      ]
+    </pre>
 
         <h4>📌 Explications des paramètres :</h4>
         <ul>
@@ -166,15 +147,15 @@
 
         <h4>✅ Exemple valide :</h4>
         <pre>
-            [
-            {
-            "weekNumberIs": "odd",
-            "days": ["monday", "wednesday", "friday"],
-            "start": "09:00",
-            "end": "12:30"
-            }
-            ]
-        </pre>
+      [
+      {
+      "weekNumberIs": "odd",
+      "days": ["monday", "wednesday", "friday"],
+      "start": "09:00",
+      "end": "12:30"
+      }
+      ]
+    </pre>
 
         <p>
           Si aucun paramètre n'est renseigné, le contenu sera affiché en
@@ -184,19 +165,14 @@
     </div>
     <hr />
     <div class="buttons validation-bar box">
-      <button
-        class="button is-primary"
-        :class="{ 'is-loading': data.isLoading }"
-      >
+      <button class="button is-primary" :class="{ 'is-loading': data.isLoading }">
         Valider
       </button>
       <router-link to="/slides" class="button is-text">Annuler</router-link>
     </div>
     <p>
-      <small
-        >Créé le {{ formatDateToFrench(data.slide.created_at) }} / Dernière
-        modification le {{ formatDateToFrench(data.slide.updated_at) }}</small
-      >
+      <small>Créé le {{ formatDateToFrench(data.slide.created_at) }} / Dernière
+        modification le {{ formatDateToFrench(data.slide.updated_at) }}</small>
     </p>
     <p></p>
   </form>
@@ -239,7 +215,7 @@ watch(
         JSON.parse(data.slide.display_times),
         null,
         2
-      );
+      ) || '';
     } catch (e) {
       console.log(e);
     }
@@ -255,6 +231,8 @@ onMounted(async () => {
   const response = await slidesStore.fetchSlide(route.params.id);
 
   data.slide = response[0];
+  if (data.slide.display_times === 'null')
+    data.slide.display_times = ''
   data.publication = formatDatetimeLocal(data.slide.publication)
   data.expiration = formatDatetimeLocal(data.slide.expiration)
   if (!data.slide.meta) {
@@ -264,7 +242,7 @@ onMounted(async () => {
   data.ecransIds = data.ecrans.map((ecran) => ecran.id);
   pageTitle(data.slide.name, "Slide");
 });
-window.bus.on("loadedIframe", (slide) => {});
+window.bus.on("loadedIframe", (slide) => { });
 window.bus.on("setSlideMeta", (meta) => {
   console.table(meta);
   for (const key in meta) {
@@ -304,7 +282,7 @@ async function submitForm() {
 }
 
 function formatDatetimeLocal(isoString) {
-    if(!isoString) return;
+  if (!isoString) return;
   const date = new Date(isoString);
   const offset = date.getTimezoneOffset();
   const localDate = new Date(date.getTime() - offset * 60000);

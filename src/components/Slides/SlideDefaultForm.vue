@@ -1,16 +1,36 @@
 <template>
     <div class="field">
-        <label class="label">Image principale</label>
 
-        <template v-if="data.meta.imagePrincipale">
-            <div class="apercu">
-                <img :src="imageThumbnail(data.meta.imagePrincipale)">
+        <div class="columns">
+            <div class="column" :style="data.meta.imagePrincipale ? 'opacity:0.5;pointer-events:none' : ''">
+                <div class="field">
+                    <label class="label">Emoji principal</label>
+                    <div class="control">
+                        <input class="input" type="text" :value="data.meta.emojiPrincipal" @input="onEmojiInput"
+                            autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" />
+                    </div>
+                    <p class="help">Entrez un seul emoji. Il sera affiché de manière centrée, au dessus du texte.
+                    </p>
+                </div>
             </div>
-        </template>
+            <div class="column" :style="data.meta.emojiPrincipal ? 'opacity:0.5;pointer-events:none' : ''">
 
-        <p class="help">Cette image sera affichée de manière centrée, au dessus du texte</p>
+                <div class="field">
+                    <label class="label">ou ... Image principale</label>
 
-        <MediaSelector name="imagePrincipale" />
+                    <template v-if="data.meta.imagePrincipale">
+                        <div class="apercu">
+                            <img :src="imageThumbnail(data.meta.imagePrincipale)">
+                        </div>
+                    </template>
+
+                    <MediaSelector name="imagePrincipale" />
+                    <p class="help">Cette image sera affichée de manière centrée, au dessus du texte.
+                        <a @click="retirer('imagePrincipale')">Retirer cette image</a>
+                    </p>
+                </div>
+            </div>
+        </div>
         <div class="columns">
             <div class="column">
                 <div class="field">
@@ -92,15 +112,50 @@ window.bus.on(`updateMedia`, (params) => {
     setSlideMeta()
 });
 
+function retirer(name) {
+    data.meta[name] = ''
+    setSlideMeta()
+
+}
 function imageThumbnail(image) {
     return supabaseMediaUrl(image.replace('medias/medias/', 'medias/thumbnails/'))
 }
+
+// À coller dans <script setup>
+function sanitizeEmojiPrincipal(value) {
+    // Normalise en NFC pour stabiliser les séquences
+    const s = (value || '').normalize('NFC');
+
+    // Segmente en graphèmes (prend en charge les ZWJ et variantes)
+    const seg = new Intl.Segmenter('fr', { granularity: 'grapheme' });
+    const graphemes = Array.from(seg.segment(s), seg => seg.segment);
+
+    // Regex large pour détecter un graphème emoji (Extended_Pictographic + variantes + ZWJ)
+    const emojiRe = /^\p{Extended_Pictographic}(?:\uFE0F|\uFE0E)?(?:\u200D\p{Extended_Pictographic}(?:\uFE0F|\uFE0E)?)*$/u;
+
+    // Filtre uniquement les graphèmes qui sont des emojis complets
+    const onlyEmojis = graphemes.filter(g => emojiRe.test(g));
+
+    // Ne conserve que le premier emoji si présent
+    return onlyEmojis.length ? onlyEmojis[0] : '';
+}
+
+function onEmojiInput(e) {
+    const cleaned = sanitizeEmojiPrincipal(e.target.value);
+    // reflète immédiatement le nettoyage dans l’UI
+    e.target.value = cleaned;
+    data.meta.emojiPrincipal = cleaned;
+    setSlideMeta();
+}
+
+
 onMounted(() => {
 
     data.meta.color = props.slide?.meta?.color || '#FFFFFF'
     data.meta.texte = props.slide?.meta?.texte || ''
     data.meta.titre = props.slide?.meta?.titre || ''
     data.meta.imagePrincipale = props.slide?.meta?.imagePrincipale || ''
+    data.meta.emojiPrincipal = sanitizeEmojiPrincipal(props.slide?.meta?.emojiPrincipal || '');
     data.meta.image = props.slide?.meta?.image || ''
     data.meta.fit = props.slide?.meta?.fit || 'cover'
     data.meta.url = props.slide?.meta?.url || ''
@@ -119,8 +174,8 @@ onMounted(() => {
 })
 
 function setSlideMeta() {
-    console.log(data.meta)
-    window.bus.emit('setSlideMeta', data.meta)
+  data.meta.emojiPrincipal = sanitizeEmojiPrincipal(data.meta.emojiPrincipal || '');
+  window.bus.emit('setSlideMeta', data.meta);
 }
 </script>
 <style scoped>

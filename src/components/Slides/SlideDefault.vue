@@ -6,10 +6,13 @@
                 :style="'object-fit:' + props.slide.meta.fit + ';opacity:' + props.slide.meta.opacity">
 
             <div class="contenu">
-                <div class="image"><img :src="imagePrincipale" v-if="imagePrincipale"></div>
+                <div class="emoji" v-if="props.slide.meta.emojiPrincipal">{{props.slide.meta.emojiPrincipal}}</div>
+                <div class="image" v-if="imagePrincipale"><img :src="imagePrincipale"></div>
                 <div class="texte" :style="'color:' + props.slide.meta.color">
-                    <h1>{{ props.slide.meta.titre }}</h1>
-                    <div v-html="texte"></div>
+                    <section>
+                        <h1>{{ props.slide.meta.titre }}</h1>
+                        <div v-html="texte"></div>
+                    </section>
                 </div>
 
             </div>
@@ -51,33 +54,36 @@ div>img {
     height: 100%;
 }
 
+.emoji {
+    text-align: center;
+    font-size: 10vh;
+}
 .contenu {
     padding: 10vh;
     position: absolute;
     z-index: 1;
-    display: flex;
-    gap: 10vh;
-    flex-direction: column;
+    /* display: flex; */
+    /* gap: 10vh; */
+    /* flex-direction: column; */
     max-width: 60vw;
     left: 50%;
     transform: translateX(-50%);
 }
 
 .texte {
-    display: flex;
-    flex-direction: column;
-    gap: 5vh;
+    display: grid;
+    place-items: center;
     text-align: center;
     font-variant: small-caps;
 }
-
+.texte > section > div > *:not(:last-child){
+    margin-bottom: 1rem;
+}
 .texte div {
+    margin-top: 1.8rem;
     font-family: 'evelethclean_thin', 'Arial';
     font-size: 2.1vw;
     line-height: 1.1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5vw
 }
 
 .texte div p {
@@ -119,6 +125,10 @@ div>img {
     line-height: 1;
 }
 
+.emoji, .image {
+    width: auto;
+    height: 15vh;
+}
 .image>img {
     width: 100%;
     height: 100%;
