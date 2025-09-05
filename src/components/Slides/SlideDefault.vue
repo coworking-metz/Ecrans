@@ -6,8 +6,8 @@
                 :style="'object-fit:' + props.slide.meta.fit + ';opacity:' + props.slide.meta.opacity">
 
             <div class="contenu">
-                <div class="emoji" v-if="props.slide.meta.emojiPrincipal">{{props.slide.meta.emojiPrincipal}}</div>
-                <div class="image" v-if="imagePrincipale"><img :src="imagePrincipale"></div>
+                <div class="emoji figure" v-if="props.slide.meta.emojiPrincipal">{{props.slide.meta.emojiPrincipal}}</div>
+                <div class="image figure" v-if="imagePrincipale"><img :src="imagePrincipale"></div>
                 <div class="texte" :style="'color:' + props.slide.meta.color">
                     <section>
                         <h1>{{ props.slide.meta.titre }}</h1>
@@ -66,8 +66,10 @@ div>img {
     /* gap: 10vh; */
     /* flex-direction: column; */
     max-width: 60vw;
-    left: 50%;
-    transform: translateX(-50%);
+    /* left: 50%; */
+    /* transform: translateX(-50%); */
+    display: grid;
+    place-items: center;
 }
 
 .texte {
@@ -75,6 +77,9 @@ div>img {
     place-items: center;
     text-align: center;
     font-variant: small-caps;
+}
+.contenu:has(.figure) .texte {
+    display: initial;
 }
 .texte > section > div > *:not(:last-child){
     margin-bottom: 1rem;
