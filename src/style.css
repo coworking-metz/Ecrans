@@ -130,3 +130,6 @@ span[class] {}
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
 }
+img[src=""] {
+    display: none!important;
+}
