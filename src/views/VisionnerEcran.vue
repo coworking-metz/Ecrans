@@ -25,6 +25,7 @@ import { useEcransStore } from '@/stores/ecrans'
 import { useSlidesStore } from '@/stores/slides'
 import { pageTitle, isInTimeRange } from '@/utils'
 import SlideRender from '@/components/Slides/SlideRender.vue';
+import { hasPriority, isAlways } from '../utils';
 const route = useRoute()
 const ecransStore = useEcransStore();
 const slidesStore = useSlidesStore();
@@ -65,9 +66,13 @@ const slides = computed(() => {
 
     const now = new Date();
 
-    const out = actifs.filter(slide => {
+    const eligibleSlides = actifs.filter(slide => {
         if (!ids.includes(slide.id)) return false;
-        if (!isInTimeRange(slide.display_times)) return false;
+        if (!isInTimeRange(slide)) return false;
+
+        // if (slide.display_times) {
+        //     console.log(JSON.stringify(slide));
+        // }
 
         const publicationDate = slide.publication ? new Date(slide.publication) : null;
         const expirationDate = slide.expiration ? new Date(slide.expiration) : null;
@@ -78,7 +83,10 @@ const slides = computed(() => {
         return true;
     });
 
-    console.log(out.length, 'slides actifs');
+    const hasAnyPriority = eligibleSlides.some(slide => hasPriority(slide));
+    const out = eligibleSlides.filter(slide => !hasAnyPriority || hasPriority(slide) || isAlways(slide));
+
+    console.log(out.length, { slides: out }, 'slides actifs');
     return out;
 });
 
@@ -151,10 +159,10 @@ function shuffleArray(array) {
 onMounted(() => {
     chargerEcran();
     pageTitle('Visionner', data.ecran.name);
+    handleShortcuts()
     // await loadSlides();
     window.bus.emit('loadSlides');
     doAvancer();
-    handleShortcuts()
 
 });
 
@@ -198,7 +206,7 @@ function doAvancer(delta = 1) {
 function handleShortcuts() {
     if (document.body.dataset.shortcuts) return;
     document.body.dataset.shortcuts = true;
-    document.body.addEventListener('keyup', (e) => {
+    document.addEventListener('keyup', (e) => {
         console.log(e.code);
         if (e.code == 'ArrowRight') {
             doAvancer(1)

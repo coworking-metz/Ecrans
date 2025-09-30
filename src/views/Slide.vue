@@ -26,6 +26,17 @@
         <div class="columns">
           <div class="column">
             <div class="field">
+              <label class="label" for="slide-active">Slide actif</label>
+              <div class="control">
+                <label class="checkbox">
+                  <input id="slide-active" type="checkbox" v-model="data.slide.active" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="column">
+            <div class="field">
               <label class="label">Type de slide</label>
               <div class="control">
                 <div class="select">

@@ -39,17 +39,43 @@ export const shortenFileName = (fileName, maxLen = 40) => {
     -sliceLen
   )}.${extension}`;
 };
-export function isInTimeRange(jsonString) {
+export function hasPriority(slide) {
+  const jsonString = slide.display_times;
+  if (jsonString === 'null') return false;
+  if (!jsonString) return false;
+  const timeRanges = JSON.parse(jsonString);
+  for (const range of timeRanges) {
+    if (range.priority) {
+      return true;
+    }
+  }
+  return false;
+};
+export function isAlways(slide) {
+  const jsonString = slide.display_times;
+  if (jsonString === 'null') return false;
+  if (!jsonString) return false;
+  const timeRanges = JSON.parse(jsonString);
+  for (const range of timeRanges) {
+    if (range.always) {
+      return true;
+    }
+  }
+  return false;
+};
+export function isInTimeRange(slide) {
+  const jsonString = slide.display_times;
+  if (jsonString === 'null') return true;
   if (!jsonString) return true;
   const timeRanges = JSON.parse(jsonString);
   if (!timeRanges) return true;
-
   const now = new Date();
   const currentDay = now.toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
   const currentTime = now.getHours() * 100 + now.getMinutes();
   const currentWeekNumber = getWeekNumber(now);
   const isWeekEven = currentWeekNumber % 2 === 0;
 
+  console.log(`Slide id: ${slide.id}`);
   console.log(`Current day: ${currentDay}`);
   console.log(`Current time in HHMM format: ${currentTime}`);
   console.log(`Current week number: ${currentWeekNumber} (Even: ${isWeekEven})`);
@@ -80,12 +106,12 @@ export function isInTimeRange(jsonString) {
       console.log(`❌ Current day is not included in the specified days for this range.`);
       break
     }
-    
+
 
     const startTime = parseInt(range.start?.replace(':', ''), 10);
     const endTime = parseInt(range.end?.replace(':', ''), 10);
 
-    if(!startTime && !endTime) continue;
+    if (!startTime && !endTime) continue;
     console.log(`🏳️ Converted start time: ${startTime}`);
     console.log(`🚩 Converted end time: ${endTime}`);
 
