@@ -101,8 +101,8 @@ function sortSlidesByIds(slides, ids) {
 
 
 watch(() => data.ecran, (newVal, oldVal) => {
-    if (!data.ecran.playlist_on) return;
-    if (!data.ecran.playlist) return;
+    if (!data.ecran?.playlist_on) return;
+    if (!data.ecran?.playlist) return;
     const playlist = data.ecran.playlist.split("\n").map(url => url.trim())
     console.log({ playlist })
     setupPlaylist(playlist)

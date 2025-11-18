@@ -133,6 +133,7 @@ div>img {
 .emoji, .image {
     width: auto;
     height: 15vh;
+    aspect-ratio: 1;
 }
 .image>img {
     width: 100%;
@@ -147,5 +148,11 @@ div>img {
     width: 10vw;
     height: 10vw;
     border: .5vw solid white;
+}
+h1:empty {
+    display: none !important;
+}
+h1:empty +div {
+    margin: 0;
 }
 </style>
