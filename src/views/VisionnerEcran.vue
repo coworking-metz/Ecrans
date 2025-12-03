@@ -71,17 +71,18 @@ const slides = computed(() => {
         if (!isInTimeRange(slide)) return false;
 
         // if (slide.display_times) {
-        //     console.log(JSON.stringify(slide));
-        // }
-
-        const publicationDate = slide.publication ? new Date(slide.publication) : null;
-        const expirationDate = slide.expiration ? new Date(slide.expiration) : null;
-
-        if (publicationDate && publicationDate > now) return false;
-        if (expirationDate && expirationDate < now) return false;
-
+            // }
+            
+            const publicationDate = slide.publication ? new Date(slide.publication) : null;
+            const expirationDate = slide.expiration ? new Date(slide.expiration) : null;
+            
+            if (publicationDate && publicationDate > now) return false;
+            console.log('slide_json',JSON.stringify(slide));
+            if (expirationDate && expirationDate < now) return false;
+            
         return true;
     });
+            console.log('slide_json','-----------------------------------------------------');
 
     const hasAnyPriority = eligibleSlides.some(slide => hasPriority(slide));
     const out = eligibleSlides.filter(slide => !hasAnyPriority || hasPriority(slide) || isAlways(slide));
