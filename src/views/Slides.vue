@@ -23,12 +23,12 @@
             </p>
             <template v-if="data.ecranId && data.ecran.name">
                 <p class="control">
-                    <router-link :to="{ name: 'visionner-ecran', params: { slug: data.ecran.slug } }" target="_blank" class="button is-small is-link">
+                    <a :href="'https://tools.coworking-metz.fr/visionner/?nocache&slug=' + data.ecran.slug" target="_blank" class="button is-small is-link">
                         <span class="icon is-small">
                             <i class="fas fa-tv"></i>
                         </span>
                         <span>{{ data.ecran.name }}</span>
-                    </router-link>
+                    </a>
                 </p>
                 <p class="control">
                     <a @click="refreshEcran" target="_blank" class="button is-small">

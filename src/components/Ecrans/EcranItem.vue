@@ -10,7 +10,7 @@
                 <p>
                     <strong>
                         <router-link :to="{ name: 'ecran-slides', params: { id: ecran.id } }">{{ ecran.name
-                            }}</router-link>
+                        }}</router-link>
                     </strong> &nbsp; <small class="tag">
                         {{ ecran.nb_slides }} slide(s)
                     </small>
@@ -18,10 +18,10 @@
             </div>
             <nav class="level is-mobile">
                 <div class="level-left">
-                    <router-link v-if="ecran.slug" :to="{ name: 'visionner-ecran', params: { slug: ecran.slug } }"
+                    <a v-if="ecran.slug" :href="'https://tools.coworking-metz.fr/visionner/?nocache&slug=' + ecran.slug"
                         title="Visionner cet écran" class="level-item" target="_blank">
                         <span class="icon is-small"><i class="fas fa-tv"></i></span>
-                    </router-link>
+                    </a>
                     <router-link :to="{ name: 'ecran-slides', params: { id: ecran.id } }" title="Slides de l'écran"
                         class="level-item">
                         <span class="icon is-small"><i class="fas fa-images"></i></span>
@@ -47,7 +47,7 @@ const props = defineProps(['ecran'])
 
 const ecranImage = computed(() => {
     const image = supabaseMediaUrl(props.ecran.image)
-    if(!image) return '/screen.png'
+    if (!image) return '/screen.png'
     return image;
 })
 function refresh() {

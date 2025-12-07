@@ -43,7 +43,7 @@ function loadedIframe() {
 }
 window.bus.on('updateSlidePreview', () => {
   if (iframe.value) {
-    iframe.value.contentWindow.location.reload();
+    iframe.value.src = iframe.value.src;
   }
 });
 
@@ -52,11 +52,14 @@ const src = computed(() => {
   if (data.slide) slideId = data.slide.id;
   if (props.slide) slideId = props.slide.id || props.slide;
   if (!slideId) return;
-  return router.resolve({
-    name: 'visionner-slide',
-    params: { id: slideId },
-    query: { render: true }
-  }).href;
+
+  return 'https://tools.coworking-metz.fr/visionner/?nocache&id=' + slideId;
+
+  // return router.resolve({
+  //   name: 'visionner-slide',
+  //   params: { id: slideId },
+  //   query: { render: true }
+  // }).href;
 })
 </script>
 <style scoped>

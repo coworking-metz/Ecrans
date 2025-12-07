@@ -29,7 +29,7 @@ export const ws = (() => {
                 // 🔥 ONLY register once per connection
                 ws.send(JSON.stringify({
                     action: "ecran",
-                    slug: route.params.slug
+                    slug: route?.params?.slug
                 }));
             };
 

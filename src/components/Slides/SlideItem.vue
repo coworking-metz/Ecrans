@@ -9,9 +9,9 @@
                     </div>
 
                     <router-link :to="{ name: 'slide', params: { id: slide.id } }">{{ slide.name
-                        }}</router-link>&nbsp;<small class="tag">{{ type }}</small>&nbsp;<strong
+                    }}</router-link>&nbsp;<small class="tag">{{ type }}</small>&nbsp;<strong
                         title="Durée en secondes">{{ slide.duration }}'</strong>
-                        <span v-if="slide.display_times" title="Ce slide n'est affiché qu'à certaines heures">⏱️</span>
+                    <span v-if="slide.display_times" title="Ce slide n'est affiché qu'à certaines heures">⏱️</span>
                 </div>
                 <div class="level-right">
                     <div class="level-item">
@@ -22,10 +22,10 @@
                         v-if="!slide.trash">
                         <span class="icon is-small"><i class="fas fa-pen"></i></span>
                     </router-link>
-                    <router-link :to="{ name: 'visionner-slide', params: { id: slide.id } }" class="level-item"
+                    <a :href="'https://tools.coworking-metz.fr/visionner/?nocache&id=' + slide.id" class="level-item"
                         v-if="!slide.trash" title="Aperçu de ce slide" target="_blank">
                         <span class="icon is-small"><i class="fas fa-tv"></i></span>
-                    </router-link>
+                    </a>
                     <a class="level-item" @click="deleteSlide" v-if="!slide.trash"
                         title="Mettre ce slide dans la corbeille">
                         <span class="icon is-small"><i class="fas fa-trash"></i></span>
