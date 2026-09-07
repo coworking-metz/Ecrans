@@ -84,7 +84,7 @@ contre 284 ko.
 ## Déploiement
 
 Le projet est hébergé sur **Cloudflare Pages**, relié à ce dépôt GitHub
-(`coworking-metz/-crans`). La production répond sur `ecrans.pages.dev`.
+(`coworking-metz/Ecrans`). La production répond sur `ecrans.pages.dev`.
 
 Netlify n'est plus utilisé : `netlify.toml` a été supprimé.
 
