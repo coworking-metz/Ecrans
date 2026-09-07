@@ -1,30 +1,107 @@
-# Ecrans - Digital Signage
+# Écrans — affichage dynamique
 
-## Présentation
-Cette application de digital signage (affichage dynamique) est conçue pour gérer et diffuser des contenus multimédias sur différents écrans. Elle est développée avec Vue.js et utilise Vite comme outil de construction.
+Application de *digital signage* de l'espace de coworking : composition de
+contenus (**slides**), regroupement en diaporamas, diffusion en boucle sur les
+téléviseurs du lieu (**écrans**).
 
-## Fonctionnalités principales
+- **[ECRANS.md](ECRANS.md)** — documentation fonctionnelle (ce que fait l'application).
+- **[ECRANS-V2.md](ECRANS-V2.md)** — spécification de la refonte en cours.
 
-### Gestion des écrans
-- **Création et gestion des écrans** : Permet de configurer et de gérer différents écrans pour l'affichage du contenu.
-- **Visualisation des écrans** : Visionner en temps réel le contenu diffusé sur chaque écran via l'interface.
+---
 
-### Gestion des médias
-- **Ajout et gestion des médias** : Interface pour ajouter et gérer les médias (images, vidéos) qui peuvent être utilisés dans les slides.
+## Branche `v2` — réécriture en cours
 
-### Gestion des slides
-- **Création et gestion des slides** : Créer des slides contenant du texte, des images, et des vidéos.
-- **Planification de l'affichage** : Organiser la séquence et la planification de l'affichage des slides sur les différents écrans.
+La v2 est écrite en JavaScript, HTML et CSS avec Bulma, sans framework
+applicatif. La v1 (Vue) reste en production jusqu'à la bascule ; son code est
+conservé dans `src/` à titre de référence et sera retiré au dernier lot.
 
-## Technologies utilisées
-- **Vue.js** : Framework principal pour la construction de l'interface utilisateur.
-- **Vite** : Utilisé pour l'outillage moderne de développement front-end.
-- **Supabase** : Pour la gestion de la base de données et l'authentification.
-- **WebSocket** : Pour la communication en temps réel.
+### Démarrer
 
-## Installation et démarrage
-1. Cloner le projet.
-2. Installer les dépendances avec `npm install`.
-3. Créer et compléter le fichier `.env`.
-4. Lancer le serveur de développement avec `npm run dev`.
+```bash
+npm install
+cp .env.modele .env      # puis compléter la clé d'accès aux données
+npm run dev              # http://localhost:5174
+npm run build            # produit ./dist
+npm test                 # tests de la couche métier
+```
 
+| Adresse | Contenu |
+|---|---|
+| `/` | Administration |
+| `/visionner/<slug>` | Lecteur d'un écran (page affichée sur les téléviseurs) |
+| `/visionner/slide/<id>` | Un slide isolé, plein écran |
+
+### Organisation
+
+```
+app/
+  index.html              administration
+  visionner.html          lecteur
+  src/
+    core/                 métier, sans aucune dépendance au DOM
+      config.js           toutes les adresses de services, et nulle part ailleurs
+      api.js              accès aux données : opérations métier, jamais de requête brute
+      schedule.js         plages horaires (analyse, évaluation, description)
+      state.js            état de diffusion d'un slide + explication
+      playlist.js         constitution du diaporama d'un écran
+      slide-types.js      schéma des types de slides, normalisation
+      store.js            état applicatif observable
+      realtime.js         liaison temps réel avec les lecteurs
+    render/               rendu d'un slide, PARTAGÉ administration ↔ lecteur
+    ui/                   routeur, composants, vues
+    admin.js              point d'entrée administration
+    player.js             point d'entrée lecteur
+  test/                   tests de la couche métier
+build.mjs                 build esbuild + versionnement des assets
+tools/rapport-horaires.mjs  outil de bascule des plages horaires
+```
+
+Deux principes structurants :
+
+- **`core/` ne touche jamais au DOM, et le DOM ne fait jamais de requête.** C'est
+  ce qui permet au lecteur et à l'administration de partager exactement les mêmes
+  règles de diffusion — en v1, elles étaient réécrites à deux endroits et
+  divergeaient.
+- **`render/` est la seule définition du rendu d'un slide.** Toute divergence
+  entre l'aperçu de l'administration et la diffusion réelle est un défaut.
+
+### Build et cache
+
+`npm run build` produit `./dist` (ce que Netlify publie) :
+
+```
+dist/
+  index.html  visionner.html
+  assets/  admin.js  admin.css  player.js  player.css  manifest.json
+  fonts/ logo.svg screen.png …
+  _redirects  _headers
+```
+
+Les noms de fichiers restent **stables** ; la version passe en paramètre de
+requête, `admin.js?v=8f3a1c2e`, où le suffixe est un hash du contenu. Les pages
+HTML ne sont jamais mises en cache, les assets versionnés le sont pour un an.
+
+Le lecteur et l'administration sont deux bundles indépendants : le lecteur ne
+charge ni Bulma, ni l'éditeur de texte, ni les vues d'administration (~17 ko
+contre ~284 ko).
+
+### Bascule des plages horaires
+
+La v2 corrige deux défauts d'évaluation des plages horaires (règles devenues
+alternatives, numéro de semaine ISO 8601). Avant de mettre un écran en v2 :
+
+```bash
+npm run rapport:horaires              # compare v1 et v2 sur 8 semaines
+node tools/rapport-horaires.mjs --convertir   # applique les conversions proposées
+```
+
+Voir le détail dans [ECRANS-V2.md, §4.2](ECRANS-V2.md).
+
+---
+
+## v1 (Vue) — encore en production
+
+```bash
+npm run dev:v1
+npm run build:v1
+```

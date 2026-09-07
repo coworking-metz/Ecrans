@@ -1,11 +1,8 @@
-# example netlify.toml
 [build]
-  command = "vite build"
+  command = "npm run build"
   publish = "dist"
 
-## Uncomment to use this redirect for Single Page Applications
-## Not needed for static site generators.
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Les redirections et les en-têtes de cache sont écrits dans dist/ par le build
+# (dist/_redirects et dist/_headers), au plus près de ce qui est produit :
+#   /visionner/*  ->  visionner.html   (le lecteur, page dédiée et légère)
+#   /*            ->  index.html       (l'administration)

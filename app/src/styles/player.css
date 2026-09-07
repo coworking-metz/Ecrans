@@ -1,0 +1,46 @@
+/* Lecteur : mise en page plein écran, sans aucune dépendance à Bulma. */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  cursor: none; /* pas de pointeur sur un téléviseur */
+}
+
+#lecteur {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  background: #000;
+}
+
+/* Barre latérale : page web à côté du diaporama. */
+#lecteur > .side {
+  flex: 0 0 20vw;
+  height: 100%;
+  border: none;
+  background: #fff;
+}
+
+/* Le diaporama occupe tout l'espace restant, barre latérale ou non. */
+#lecteur > .slides {
+  position: relative;
+  flex: 1 1 auto;
+  height: 100%;
+  overflow: hidden;
+}
+
+#lecteur > .slides > .rendu {
+  position: absolute;
+  inset: 0;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+#lecteur > .slides > .rendu.entre,
+#lecteur > .slides > .rendu.sort {
+  opacity: 0;
+}
