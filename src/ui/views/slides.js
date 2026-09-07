@@ -33,6 +33,8 @@ export function vueSlides(params, conteneur) {
 
   const etat = {
     filtreEtat: null,
+    /** null = tous les écrans, "aucun" = slides sans écran, sinon un identifiant. */
+    filtreEcran: null,
     recherche: "",
     tri: ecranId ? "ordre" : "modification",
     selection: new Set(),
@@ -68,16 +70,34 @@ export function vueSlides(params, conteneur) {
       slides = slides.filter((s) => ids.has(s.id));
     }
 
-    // 2. État de chaque slide
+    // 2. Filtre par écran — c'est un périmètre, pas un simple masquage : les
+    //    compteurs d'états portent dessus, et l'état affiché devient celui de
+    //    cet écran, comme sur sa propre page.
+    if (etat.filtreEcran === "aucun") {
+      const rattaches = new Set(store.liens.map((l) => l.slide_id));
+      slides = slides.filter((s) => !rattaches.has(s.id));
+    } else if (etat.filtreEcran) {
+      const ids = new Set(
+        store.liens.filter((l) => l.ecran_id === etat.filtreEcran).map((l) => l.slide_id)
+      );
+      slides = slides.filter((s) => ids.has(s.id));
+    }
+
+    // L'écran de référence pour le calcul des états : celui de la page, ou
+    // celui du filtre.
+    const contexte =
+      ecran || (typeof etat.filtreEcran === "number" ? ecranParId(etat.filtreEcran) : null);
+
+    // 3. État de chaque slide
     const avecEtat = slides.map((slide) => {
       const ecransDu = ecransDuSlide(slide.id);
-      const etatSlide = ecranId
+      const etatSlide = contexte
         ? computeSlideState(slide, {
             now: maintenant,
             ecrans: ecransDu,
-            ecran,
-            lien: lienDe(slide.id, ecranId),
-            slidesDeLEcran: index[ecranId] || [],
+            ecran: contexte,
+            lien: lienDe(slide.id, contexte.id),
+            slidesDeLEcran: index[contexte.id] || [],
           })
         : computeSlideStateGlobal(slide, {
             now: maintenant,
@@ -90,7 +110,7 @@ export function vueSlides(params, conteneur) {
 
     const compteurs = compterEtats(avecEtat.map((x) => x.etat));
 
-    // 3. Filtres
+    // 4. Filtres d'affichage
     let visibles = avecEtat;
     if (etat.filtreEtat) visibles = visibles.filter((x) => x.etat.etat === etat.filtreEtat);
     if (etat.recherche) {
@@ -98,9 +118,9 @@ export function vueSlides(params, conteneur) {
       visibles = visibles.filter((x) => x.slide.name?.toLowerCase().includes(q));
     }
 
-    // 4. Tri
-    if (etat.tri === "ordre" && ecran) {
-      const ordre = ecran.slideSort || [];
+    // 5. Tri
+    if (etat.tri === "ordre" && contexte) {
+      const ordre = contexte.slideSort || [];
       visibles = [...visibles].sort((a, b) => {
         const ia = ordre.indexOf(a.slide.id);
         const ib = ordre.indexOf(b.slide.id);
@@ -130,14 +150,14 @@ export function vueSlides(params, conteneur) {
         etat.filtreEtat = code;
         dessiner();
       }),
-      barreFiltres(),
-      etat.selection.size ? barreSelection(ecran) : null,
+      barreFiltres(contexte),
+      etat.selection.size ? barreSelection(contexte) : null,
       visibles.length === 0
         ? h("p.notification.is-light.mt-4", {}, "Aucun slide ne correspond.")
         : h(
             "div.slides-liste.mt-3",
             {},
-            visibles.map((x) => ligneSlide(x, ecran))
+            visibles.map((x) => ligneSlide(x, contexte))
           )
     );
   }
@@ -196,10 +216,11 @@ export function vueSlides(params, conteneur) {
     );
   }
 
-  function barreFiltres() {
+  function barreFiltres(contexte) {
     return h(
       "div.field.is-grouped.filtres.mt-2",
       {},
+
       h(
         "p.control.has-icons-left.is-expanded",
         {},
@@ -214,6 +235,10 @@ export function vueSlides(params, conteneur) {
         }),
         h("span.icon.is-small.is-left", {}, h("i.fas.fa-magnifying-glass"))
       ),
+
+      // Filtre par écran : hors de la page d'un écran, où il serait redondant.
+      ecranId ? null : filtreEcran(),
+
       h(
         "p.control",
         {},
@@ -229,13 +254,59 @@ export function vueSlides(params, conteneur) {
                 dessiner();
               },
             },
-            ecranId ? h("option", { value: "ordre" }, "Ordre de diffusion") : null,
+            contexte ? h("option", { value: "ordre" }, "Ordre de diffusion") : null,
             h("option", { value: "modification" }, "Modifié récemment"),
             h("option", { value: "nom" }, "Nom"),
             h("option", { value: "duree" }, "Durée")
           )
         )
       )
+    );
+  }
+
+  /**
+   * Sélecteur d'écran.
+   *
+   * Le choix agit comme un périmètre : les compteurs d'états et l'état affiché
+   * pour chaque slide deviennent ceux de l'écran retenu, comme sur sa page.
+   * « Sans écran » isole les slides qui ne passent nulle part.
+   */
+  function filtreEcran() {
+    const nbSansEcran = (() => {
+      const rattaches = new Set(store.liens.map((l) => l.slide_id));
+      return store.slides.filter((s) => !!s.trash === corbeille && !rattaches.has(s.id)).length;
+    })();
+
+    return h(
+      "p.control.has-icons-left",
+      {},
+      h(
+        "span.select.is-small",
+        { class: etat.filtreEcran ? "is-link" : "" },
+        h(
+          "select",
+          {
+            title: "Filtrer par écran",
+            value: etat.filtreEcran === null ? "" : String(etat.filtreEcran),
+            onChange: (e) => {
+              const v = e.target.value;
+              etat.filtreEcran = v === "" ? null : v === "aucun" ? "aucun" : Number(v);
+              // Le tri « ordre de diffusion » n'a de sens que dans un écran.
+              if (!etat.filtreEcran && etat.tri === "ordre") etat.tri = "modification";
+              etat.selection.clear();
+              dessiner();
+            },
+          },
+          h("option", { value: "" }, "Tous les écrans"),
+          store.ecrans.map((ecranOption) =>
+            h("option", { value: String(ecranOption.id) }, ecranOption.name || `Écran ${ecranOption.id}`)
+          ),
+          nbSansEcran
+            ? h("option", { value: "aucun" }, `⚠ Sans écran (${nbSansEcran})`)
+            : null
+        )
+      ),
+      h("span.icon.is-small.is-left", {}, h("i.fas.fa-tv"))
     );
   }
 
