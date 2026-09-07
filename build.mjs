@@ -53,7 +53,8 @@ function lireEnv(fichier) {
   );
 }
 
-// Les variables d'environnement du processus (Netlify) priment sur le `.env` local.
+// Les variables d'environnement du processus (celles du tableau de bord
+// Cloudflare Pages, en production) priment sur le `.env` local.
 const env = { ...lireEnv(path.join(RACINE, ".env")) };
 for (const cle of Object.keys(env)) {
   if (process.env[cle]) env[cle] = process.env[cle];
@@ -181,7 +182,13 @@ function ecrirePages(manifeste) {
   }
 }
 
-/** Redirections Netlify : le lecteur et l'administration ont chacun leur page. */
+/**
+ * Redirections et en-têtes, lus par Cloudflare Pages dans le dossier publié.
+ *
+ * C'est la seule configuration de déploiement versionnée : le reste (commande
+ * de build, dossier de sortie, variables) vit dans le tableau de bord
+ * Cloudflare, comme le veut Pages.
+ */
 function ecrireRedirections() {
   const regles = [
     "/visionner/*   /visionner.html   200",
@@ -191,6 +198,9 @@ function ecrireRedirections() {
 
   // En-têtes de cache : les pages ne sont jamais mises en cache (elles portent
   // les numéros de version), les assets versionnés le sont pour longtemps.
+  // L'ordre compte : sur Cloudflare Pages, quand plusieurs règles correspondent,
+  // c'est la dernière qui l'emporte pour un même en-tête. La règle du manifeste
+  // doit donc rester APRÈS celle de /assets/*.
   const entetes = [
     "/assets/*",
     "  Cache-Control: public, max-age=31536000, immutable",

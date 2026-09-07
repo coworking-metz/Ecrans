@@ -1,8 +1,0 @@
-[build]
-  command = "npm run build"
-  publish = "dist"
-
-# Les redirections et les en-têtes de cache sont écrits dans dist/ par le build
-# (dist/_redirects et dist/_headers), au plus près de ce qui est produit :
-#   /visionner/*  ->  visionner.html   (le lecteur, page dédiée et légère)
-#   /*            ->  index.html       (l'administration)

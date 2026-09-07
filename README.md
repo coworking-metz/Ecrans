@@ -63,7 +63,7 @@ Deux principes structurants :
 
 ## Build et cache
 
-`npm run build` produit `./dist`, ce que Netlify publie :
+`npm run build` produit `./dist`, le dossier publié :
 
 ```
 dist/
@@ -80,6 +80,47 @@ HTML ne sont jamais mises en cache, les assets versionnés le sont pour un an.
 Le lecteur et l'administration sont deux bundles indépendants : le lecteur ne
 charge ni Bulma, ni l'éditeur de texte, ni les vues d'administration — **17 ko**
 contre 284 ko.
+
+## Déploiement
+
+Le projet est hébergé sur **Cloudflare Pages**, relié à ce dépôt GitHub
+(`coworking-metz/-crans`). La production répond sur `ecrans.pages.dev`.
+
+Netlify n'est plus utilisé : `netlify.toml` a été supprimé.
+
+### Ce qui vit dans le tableau de bord Cloudflare
+
+Pages ne lit aucune configuration versionnée pour ces réglages — ils se
+définissent dans l'interface, projet par projet :
+
+| Réglage | Valeur |
+|---|---|
+| Build command | `npm run build` |
+| Output directory | `dist` |
+| Variables d'environnement | `VITE_APP_SUPABASE_KEY`, `VITE_APP_PASSWORD`, et toute variable `VITE_APP_*` que l'on veut surcharger |
+
+`build.mjs` lit les variables du processus en priorité sur le `.env` local :
+c'est ainsi que la clé d'accès aux données arrive dans le bundle en production,
+sans jamais être versionnée.
+
+> ⚠️ **En passant de la v1 à la v2**, la commande de build doit être changée de
+> `vite build` à `npm run build`. Le dossier de sortie reste `dist`.
+
+### Ce qui vit dans le dépôt
+
+Le build écrit deux fichiers que Cloudflare Pages lit dans le dossier publié :
+
+- **`dist/_redirects`** — `/visionner/*` sert la page du lecteur, tout le reste
+  sert l'administration. C'est ce qui fait fonctionner les adresses sans
+  rechargement de page.
+- **`dist/_headers`** — les pages HTML et le manifeste ne sont jamais mis en
+  cache, les assets versionnés le sont pour un an.
+
+### Prévisualisation d'une branche
+
+Cloudflare Pages déploie automatiquement les branches non-production sur une
+URL de prévisualisation. La branche `v2` est donc consultable sans toucher à la
+production, avec son propre jeu de variables d'environnement si besoin.
 
 ## Bascule des plages horaires
 
