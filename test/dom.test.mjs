@@ -32,7 +32,7 @@ globalThis.document = {
   },
 };
 
-const { h } = await import("../src/ui/dom.js");
+const { h, rendre } = await import("../src/ui/dom.js");
 
 test("balise seule", () => {
   const n = h("section");
@@ -63,6 +63,38 @@ test("un segment peut contenir plusieurs classes séparées par des espaces", ()
   // Forme produite par `bouton({ classe: "is-small is-light" })`.
   const n = h("button.button.is-small is-light");
   assert.equal(n.className, "button is-small is-light");
+});
+
+test("les tableaux d'éléments sont aplatis, pas transformés en texte", () => {
+  // `replaceChildren` (natif) convertit un tableau en une chaîne :
+  // « [object HTMLElement],[object HTMLElement],… ». `rendre` doit aplatir.
+  const conteneur = {
+    enfants: [],
+    replaceChildren() {
+      this.enfants = [];
+    },
+    append(...n) {
+      this.enfants.push(...n);
+    },
+  };
+
+  const lignes = [{ nodeType: 1, nom: "a" }, { nodeType: 1, nom: "b" }];
+  rendre(conteneur, { nodeType: 1, nom: "entete" }, lignes, null);
+
+  assert.equal(conteneur.enfants.length, 3);
+  assert.deepEqual(
+    conteneur.enfants.map((e) => e.nom),
+    ["entete", "a", "b"]
+  );
+  assert.ok(
+    conteneur.enfants.every((e) => e.nodeType === 1),
+    "aucun nœud texte ne doit être créé"
+  );
+});
+
+test("h() aplatit aussi les tableaux d'enfants", () => {
+  const n = h("div", {}, [{ nodeType: 1 }, { nodeType: 1 }], { nodeType: 1 });
+  assert.equal(n.enfants.length, 3);
 });
 
 test("`value` est appliqué après les enfants", () => {

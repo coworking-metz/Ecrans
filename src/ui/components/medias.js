@@ -3,7 +3,10 @@
  * dans tous les formulaires.
  */
 
-import { h, bouton, icone, message, erreur, confirmer } from "../dom.js";
+// `rendre` est aliasé : ces composants ont leur propre fonction locale `rendre`,
+// et il ne faut surtout pas retomber sur `replaceChildren` par mégarde (voir
+// plus bas — la méthode native n'aplatit pas les tableaux).
+import { h, bouton, icone, message, erreur, confirmer, rendre as remplir } from "../dom.js";
 import { medias as apiMedias, FORMATS_ACCEPTES, FORMATS_MINIATURE } from "../../core/api.js";
 import { urlMiniature, urlImage, fabriquerMiniature, raccourcirNom } from "../../core/media.js";
 import { formatDateHeure } from "../../core/dates.js";
@@ -224,7 +227,11 @@ export function listeMedias({
 
   function rendreListe() {
     const filtres = store.medias.filter((m) => !recherche || m.index.includes(recherche));
-    conteneur.replaceChildren(
+    // `remplir` (et non `replaceChildren`) : la méthode native du DOM n'aplatit
+    // pas les tableaux, elle les convertit en texte — la liste s'affichait en
+    // « [object HTMLElement],[object HTMLElement],… ».
+    remplir(
+      conteneur,
       filtres.length === 0
         ? h("p.has-text-grey.p-4", {}, recherche ? "Aucun fichier ne correspond." : "Aucun fichier.")
         : filtres.map((m) =>
@@ -272,7 +279,8 @@ export function selecteurMedia({ valeur, onChange, libelle = "Média" }) {
   }
 
   function rendre() {
-    racine.replaceChildren(
+    remplir(
+      racine,
       h(
         "div.field",
         {},

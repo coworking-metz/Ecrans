@@ -7,7 +7,8 @@
  * verdict immédiat, et un mode expert conservé pour les cas particuliers.
  */
 
-import { h, bouton, icone, message } from "../dom.js";
+// `rendre` est aliasé : ce composant a sa propre fonction locale `rendre`.
+import { h, bouton, message, rendre as remplir } from "../dom.js";
 import {
   JOURS,
   parseSchedule,
@@ -276,7 +277,8 @@ export function editeurHoraires({ valeur, onChange, avecPriorite = true }) {
               }.`
         );
 
-    racine.replaceChildren(
+    remplir(
+      racine,
       h(
         "div.horaires-entete",
         {},
