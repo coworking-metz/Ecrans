@@ -88,6 +88,7 @@ export function resoudre() {
 }
 
 export function demarrerRouteur(cible) {
+  if (!cible) throw new Error("demarrerRouteur : conteneur de vue introuvable.");
   conteneur = cible;
   window.addEventListener("popstate", resoudre);
   resoudre();

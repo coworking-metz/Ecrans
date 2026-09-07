@@ -7,13 +7,17 @@
  */
 
 /**
- * @param {string} balise  ex. "div.box.mb-4" ou "button.button.is-small"
+ * @param {string} balise  ex. "div.box.mb-4", "div#vue", "button.button.is-small"
+ *                         Un segment de classe peut contenir plusieurs classes
+ *                         séparées par des espaces : "button.is-small is-light".
  * @param {object} [props] attributs, propriétés, `on*` pour les événements
  * @param {...any} enfants chaînes, nœuds, tableaux, null (ignoré)
  */
 export function h(balise, props = {}, ...enfants) {
-  const [nom, ...classes] = balise.split(".");
+  const [tete, ...classes] = balise.split(".");
+  const [nom, id] = tete.split("#");
   const noeud = document.createElement(nom || "div");
+  if (id) noeud.id = id;
   if (classes.length) noeud.className = classes.join(" ");
 
   if (props && (props.nodeType || Array.isArray(props) || typeof props === "string")) {

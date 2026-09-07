@@ -27,7 +27,7 @@ import path from "node:path";
 import http from "node:http";
 
 const RACINE = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
-const SRC = path.join(RACINE, "app");
+const SRC = path.join(RACINE, "src");
 const DIST = path.join(RACINE, "dist");
 const PUBLIC = path.join(RACINE, "public");
 
@@ -124,8 +124,8 @@ const OPTIONS_COMMUNES = {
  */
 async function bundler() {
   const entrees = [
-    { nom: "admin", fichier: path.join(SRC, "src/admin.js") },
-    { nom: "player", fichier: path.join(SRC, "src/player.js") },
+    { nom: "admin", fichier: path.join(SRC, "admin.js") },
+    { nom: "player", fichier: path.join(SRC, "player.js") },
   ];
 
   for (const entree of entrees) {
@@ -161,12 +161,13 @@ function fabriquerManifeste() {
  *   {{v:/assets/admin.js}}  ->  ?v=8f3a1c2e
  *   {{manifest}}            ->  <script>window.__ASSETS__ = {...}</script>
  */
+const PAGES = ["index.html", "visionner.html"];
+
 function ecrirePages(manifeste) {
   const injection = `<script>window.__ASSETS__=${JSON.stringify(manifeste)}</script>`;
 
-  for (const nom of fs.readdirSync(SRC)) {
-    if (!nom.endsWith(".html")) continue;
-    let html = fs.readFileSync(path.join(SRC, nom), "utf8");
+  for (const nom of PAGES) {
+    let html = fs.readFileSync(path.join(RACINE, nom), "utf8");
     html = html.replace(/\{\{v:([^}]+)\}\}/g, (_, chemin) => {
       const hash = manifeste[chemin.trim()];
       if (!hash) {
@@ -271,8 +272,9 @@ await construire();
 
 if (DEV) {
   servir();
+
   let enCours = false;
-  fs.watch(SRC, { recursive: true }, async () => {
+  const reconstruire = () => {
     if (enCours) return;
     enCours = true;
     setTimeout(async () => {
@@ -283,5 +285,10 @@ if (DEV) {
       }
       enCours = false;
     }, 100);
-  });
+  };
+
+  // On surveille les sources et les deux pages — surtout pas la racine entière,
+  // qui contient dist/ : chaque build relancerait le build.
+  fs.watch(SRC, { recursive: true }, reconstruire);
+  for (const page of PAGES) fs.watch(path.join(RACINE, page), reconstruire);
 }

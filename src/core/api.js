@@ -281,13 +281,22 @@ export const liens = {
   },
 };
 
-/** La colonne `active` existe-t-elle sur les liens ? Testé une fois, mis en cache. */
+/**
+ * La colonne `active` existe-t-elle sur les liens ?
+ *
+ * On lit une ligne complète plutôt que de demander la colonne : interroger une
+ * colonne absente renvoie une erreur 400, bruyante dans la console alors que le
+ * repli est parfaitement normal.
+ *
+ * Table vide : on ne peut pas conclure, on suppose que la colonne n'existe pas.
+ * Le repli (interrupteur global) est le comportement sûr.
+ */
 let _supporteActiveParEcran = null;
 export async function supporteActiveParEcran() {
   if (_supporteActiveParEcran !== null) return _supporteActiveParEcran;
   try {
-    await rest("liens_ecrans_slides?select=active&limit=1");
-    _supporteActiveParEcran = true;
+    const lignes = await rest("liens_ecrans_slides?select=*&limit=1");
+    _supporteActiveParEcran = Array.isArray(lignes) && lignes.length > 0 && "active" in lignes[0];
   } catch {
     _supporteActiveParEcran = false;
   }
