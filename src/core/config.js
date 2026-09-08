@@ -8,8 +8,8 @@
  * (voir `build.mjs`), via la constante `__ENV__`.
  */
 
-/* global __ENV__ */
-const env = typeof __ENV__ === "object" && __ENV__ !== null ? __ENV__ : {};
+// Vite expose les variables préfixées `VITE_` du fichier `.env`.
+const env = import.meta.env;
 
 export const config = {
   /** Base de données et stockage. */

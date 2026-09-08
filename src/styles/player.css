@@ -33,14 +33,19 @@ body {
   overflow: hidden;
 }
 
-#lecteur > .slides > .rendu {
+#lecteur .slides > .rendu-hote,
+#lecteur .slides > .rendu {
   position: absolute;
   inset: 0;
-  opacity: 1;
+}
+
+/* Transition entre deux slides : les deux se superposent le temps du fondu. */
+.fondu-enter-active,
+.fondu-leave-active {
   transition: opacity 0.5s ease;
 }
 
-#lecteur > .slides > .rendu.entre,
-#lecteur > .slides > .rendu.sort {
+.fondu-enter-from,
+.fondu-leave-to {
   opacity: 0;
 }

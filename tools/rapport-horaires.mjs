@@ -28,7 +28,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { isInTimeRange as evaluerV2 } from "../app/src/core/schedule.js";
+import { isInTimeRange as evaluerV2 } from "../src/core/schedule.js";
 
 const RACINE = path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "..");
 const SORTIE_JSON = process.argv.includes("--json");

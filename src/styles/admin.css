@@ -483,7 +483,8 @@ body {
 }
 
 /* Le rendu s'adapte seul : ses tailles sont en unités de conteneur. */
-.apercu-tv .tv-ecran > .rendu {
+.apercu-tv .tv-ecran > .rendu-hote,
+.apercu-tv .tv-ecran > .rendu-hote > .rendu {
   position: absolute;
   inset: 0;
 }
@@ -643,13 +644,10 @@ body {
   gap: 0.5rem;
 }
 
-body[data-liaison="deconnectee"] .navbar::after,
-body[data-liaison="erreur"] .navbar::after {
-  content: "Liaison temps réel interrompue — le pilotage à distance est indisponible.";
-  display: block;
-  width: 100%;
+.bandeau-liaison {
+  margin: 0;
   background: #ffe08a;
   color: #946c00;
   font-size: 0.75rem;
-  padding: 0.15rem 1rem;
+  padding: 0.25rem 1rem;
 }
