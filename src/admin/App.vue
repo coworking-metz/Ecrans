@@ -64,47 +64,58 @@ const liaisonRompue = computed(
 );
 </script>
 
+<!--
+  Racine UNIQUE, et des `v-if`/`v-else` portés par de vrais éléments.
+
+  La version précédente avait plusieurs racines, dont un `<template v-else>` à
+  plusieurs enfants et un composant frère. Cette structure se compile en un
+  bloc de fragments imbriqués qui plantait — et seulement en production, les
+  optimisations du compilateur (blocs, hissage statique) étant désactivées en
+  développement. Voir `test/bundle.test.js`, qui monte l'artefact construit.
+-->
 <template>
-  <!-- Écran de connexion -->
-  <form v-if="!autorise" class="connexion" @submit.prevent>
-    <img src="/logo.svg" alt="" width="64" height="64" />
-    <h1 class="title is-5 mt-4">Écrans</h1>
-    <div class="field">
-      <div class="control">
-        <input
-          v-model="saisie"
-          class="input"
-          type="password"
-          placeholder="Code d'accès"
-          autofocus
-          @input="verifierCode"
-        />
+  <div class="application">
+    <!-- Écran de connexion -->
+    <form v-if="!autorise" class="connexion" @submit.prevent>
+      <img src="/logo.svg" alt="" width="64" height="64" />
+      <h1 class="title is-5 mt-4">Écrans</h1>
+      <div class="field">
+        <div class="control">
+          <input
+            v-model="saisie"
+            class="input"
+            type="password"
+            placeholder="Code d'accès"
+            autofocus
+            @input="verifierCode"
+          />
+        </div>
+      </div>
+      <p class="help">Entrez le code de la boîte à clés de la réserve.</p>
+    </form>
+
+    <div v-else class="administration">
+      <NavBar />
+
+      <p v-if="liaisonRompue" class="bandeau-liaison">
+        Liaison temps réel interrompue — le pilotage à distance est indisponible.
+      </p>
+
+      <div class="container is-fluid mt-4">
+        <progress v-if="donnees.chargement" class="progress is-small is-primary"></progress>
+
+        <div v-else-if="donnees.erreur" class="notification is-danger">
+          <p><strong>Chargement impossible.</strong></p>
+          <p>{{ donnees.erreur.message }}</p>
+          <p class="mt-2">
+            Vérifiez la configuration (clé d'accès aux données) et rechargez la page.
+          </p>
+        </div>
+
+        <RouterView v-else />
       </div>
     </div>
-    <p class="help">Entrez le code de la boîte à clés de la réserve.</p>
-  </form>
 
-  <template v-else>
-    <NavBar />
-
-    <p v-if="liaisonRompue" class="bandeau-liaison">
-      Liaison temps réel interrompue — le pilotage à distance est indisponible.
-    </p>
-
-    <div class="container is-fluid mt-4">
-      <progress v-if="donnees.chargement" class="progress is-small is-primary"></progress>
-
-      <div v-else-if="donnees.erreur" class="notification is-danger">
-        <p><strong>Chargement impossible.</strong></p>
-        <p>{{ donnees.erreur.message }}</p>
-        <p class="mt-2">
-          Vérifiez la configuration (clé d'accès aux données) et rechargez la page.
-        </p>
-      </div>
-
-      <RouterView v-else />
-    </div>
-  </template>
-
-  <MessagesFlottants />
+    <MessagesFlottants />
+  </div>
 </template>

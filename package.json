@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test test/*.test.mjs",
+    "test": "npm run test:metier && npm run build && npm run test:montage",
+    "test:metier": "node --test test/*.test.mjs",
+    "test:montage": "vitest run",
     "rapport:horaires": "node tools/rapport-horaires.mjs"
   },
   "dependencies": {
@@ -19,6 +21,9 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.8",
-    "vite": "^8.2.2"
+    "@vue/test-utils": "^2.5.0",
+    "jsdom": "^30.0.1",
+    "vite": "^8.2.2",
+    "vitest": "^5.0.0"
   }
 }

@@ -87,9 +87,31 @@ Trois principes structurants :
   lecteur ne charge ni Bulma, ni Quill, ni le routeur, ni les vues
   d'administration.
 
-Le test `test/state.test.mjs` vérifie explicitement que `computeSlideState`
-(ce que l'administration affiche) et `eligibleSlides` (ce que le lecteur
-diffuse) ne peuvent pas diverger.
+## Tests
+
+```bash
+npm test              # tout : métier, puis build, puis montage
+npm run test:metier   # règles pures, sans navigateur (node:test)
+npm run test:montage  # montage des composants et du bundle (vitest + jsdom)
+```
+
+Trois niveaux, chacun pour une raison précise :
+
+| Fichiers | Ce qu'ils attrapent |
+|---|---|
+| `test/schedule.test.mjs`, `test/state.test.mjs` | Les règles de diffusion. `state.test.mjs` vérifie que `computeSlideState` (ce que l'administration affiche) et `eligibleSlides` (ce que le lecteur diffuse) **ne peuvent pas diverger**. |
+| `test/montage.test.js` | Les composants s'affichent : fragments, `Teleport`, `Transition` — les mécanismes de Vue qui échouent silencieusement. |
+| `test/bundle-*.test.js` | Le **bundle réellement déployé** se monte. |
+
+Le dernier niveau existe parce qu'il a manqué : une panne a atteint la
+production alors que le build réussissait et que les sources se montaient. Le
+compilateur de templates de Vue n'optimise qu'en production, et le bug ne se
+manifestait que là. Les tests de bundle montent donc `dist/`, avec le code
+d'accès mémorisé — c'est ce que voit un utilisateur, et c'était précisément la
+branche non couverte.
+
+`npm test` reconstruit avant de lancer les tests de montage, pour qu'ils ne
+portent jamais sur un `dist/` périmé.
 
 ## Build et cache
 

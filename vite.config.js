@@ -73,6 +73,20 @@ export default defineConfig({
     port: 5174,
   },
 
+  // Tests de montage : un build qui réussit ne garantit pas que l'application
+  // s'affiche. jsdom permet de le vérifier sans navigateur.
+  test: {
+    environment: "jsdom",
+    include: ["test/**/*.test.js"],
+    restoreMocks: true,
+    // Les fichiers de `public/` sont servis tels quels en vrai ; en test, il
+    // faut les pointer explicitement.
+    alias: {
+      "/logo.svg": fileURLToPath(new URL("./public/logo.svg", import.meta.url)),
+      "/screen.png": fileURLToPath(new URL("./public/screen.png", import.meta.url)),
+    },
+  },
+
   build: {
     // Deux pages : l'administration et le lecteur. Le lecteur ne charge ainsi
     // ni Bulma, ni l'éditeur de texte, ni les vues d'administration.
