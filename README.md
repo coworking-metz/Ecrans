@@ -119,6 +119,11 @@ Pages ne lit aucune configuration versionnée pour ces réglages :
 | Output directory | `dist` |
 | Variables d'environnement | `VITE_APP_SUPABASE_KEY`, `VITE_APP_PASSWORD`, et toute variable `VITE_APP_*` |
 
+Vite 8 exige Node `^20.19 || >=22.12`, alors que Cloudflare Pages retombe sur
+Node 18 pour les projets anciens. Le fichier `.nvmrc` à la racine impose Node 22
+au moment du build ; s'il venait à disparaître, le build échouerait en
+production avec une erreur de version.
+
 Vite n'expose au navigateur que les variables préfixées `VITE_`.
 
 ### Ce qui vit dans le dépôt
