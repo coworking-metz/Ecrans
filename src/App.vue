@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router';
 import { useEcransStore } from '@/stores/ecrans';
 import { useMediasStore } from '@/stores/medias';
 import { useSlidesStore } from '@/stores/slides';
+import { checkAuth, login } from '@/auth';
 
 const route = useRoute();
 const ecransStore = useEcransStore();
@@ -13,7 +14,9 @@ const slidesStore = useSlidesStore();
 
 const data = reactive({
   hasNavbar: false,
-  password: ''
+  user: null,
+  authChecked: false,
+  error: ''
 });
 
 function start() {
@@ -26,19 +29,17 @@ function start() {
 
 };
 
-const isAuthenticated = computed(() => {
-  if(document.location.href.includes('visionner')) return true;
-  const envPassword = import.meta.env.VITE_APP_PASSWORD || false;
-  if(!envPassword) return true;
-  const storedPassword = localStorage.getItem('auth');
-  if (storedPassword === envPassword) {
-    return true;
-  }
-  if (data.password === envPassword) {
-    localStorage.setItem('auth', data.password);
-    return true;
-  }
-})
+const isVisionner = document.location.href.includes('visionner');
+
+const isAuthenticated = computed(() => isVisionner || !!data.user);
+
+if (!isVisionner) {
+  checkAuth()
+    .then(u => { data.user = u; })
+    .catch(e => { data.error = e.message; })
+    .finally(() => { data.authChecked = true; });
+}
+
 window.bus.on('loadSlides', () => {
   slidesStore.fetchSlides();
   slidesStore.fetchLiens();
@@ -65,8 +66,8 @@ const appReady = computed(() => {
 
 
 <template>
-  <template v-if="appReady">
-    <template v-if="isAuthenticated">
+  <template v-if="isAuthenticated">
+    <template v-if="appReady">
       <template v-if="data.hasNavbar">
         <nav-bar />
         <div class="container ml-5 mr-5 mt-5">
@@ -79,13 +80,12 @@ const appReady = computed(() => {
         <router-view />
       </template>
     </template>
-    <template v-else>
-      <form class="login">
-        <input type="password" v-model="data.password" placeholder="Enter password" />
-        <p>Entrer le code de la boîte à clé de la réserve.</p>
-        <!-- <button type="submit">Submit</button> -->
-      </form>
-    </template>
+  </template>
+  <template v-else-if="data.authChecked">
+    <div class="login">
+      <p v-if="data.error" class="has-text-danger mb-3">{{ data.error }}</p>
+      <button class="button is-link" @click="login">Se connecter avec Coworking Metz</button>
+    </div>
   </template>
 </template>
 <style scoped>
@@ -94,5 +94,6 @@ const appReady = computed(() => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  text-align: center;
 }
 </style>
