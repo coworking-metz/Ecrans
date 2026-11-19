@@ -489,6 +489,17 @@ body {
   inset: 0;
 }
 
+.apercu-tv .apercu-prod {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  border: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
 .champ-couleur {
   display: flex;
   gap: 0.5rem;

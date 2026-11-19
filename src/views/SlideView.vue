@@ -26,6 +26,24 @@ const source = computed(() => donnees.slideParId(route.params.id));
 const brouillon = reactive({ meta: {} });
 const ecransIds = ref([]);
 const modifie = ref(false);
+
+// Aperçu de production : la vraie visionneuse, dans une iframe 1920×1080 mise
+// à l'échelle. Elle lit le slide enregistré, pas le brouillon.
+const apercuProd = ref(false);
+const rechargeProd = ref(0);
+const echelleProd = ref(0.2);
+const zoneApercu = ref(null);
+let observateur = null;
+
+watch(zoneApercu, (el) => {
+  observateur?.disconnect();
+  if (!el) return;
+  observateur = new ResizeObserver(([e]) => {
+    echelleProd.value = e.contentRect.width / 1920;
+  });
+  observateur.observe(el);
+});
+onBeforeUnmount(() => observateur?.disconnect());
 let initialisation = true;
 
 function initialiser() {
@@ -141,6 +159,7 @@ async function enregistrer() {
     await apiLiens.setEcransDuSlide(source.value.id, ecransIds.value);
     await donnees.recharger();
     modifie.value = false;
+    rechargeProd.value++;
     message("Slide enregistré.");
   } catch (e) {
     erreur(e);
@@ -414,15 +433,35 @@ onBeforeRouteLeave(() => {
         <div class="apercu-tv">
           <p class="heading">Aperçu</p>
           <div class="tv">
-            <div class="tv-ecran">
+            <div ref="zoneApercu" class="tv-ecran">
+              <iframe
+                v-if="apercuProd"
+                :key="rechargeProd"
+                class="apercu-prod"
+                :src="urlLecteur({ slideId: source.id })"
+                :style="{ transform: `scale(${echelleProd})` }"
+                title="Aperçu de production"
+              ></iframe>
               <!-- Le même rendu que le lecteur : aucune divergence possible. -->
               <SlideRender
+                v-else
                 :key="brouillon.type"
                 :slide="{ ...brouillon, id: source.id }"
                 :largeur-image="800"
               />
             </div>
           </div>
+          <div class="buttons are-small mt-2">
+            <button type="button" class="button is-small" @click="apercuProd = !apercuProd; rechargeProd++">
+              {{ apercuProd ? "Aperçu en direct" : "Aperçu prod" }}
+            </button>
+            <button v-if="apercuProd" type="button" class="button is-small" @click="rechargeProd++">
+              Recharger
+            </button>
+          </div>
+          <p v-if="apercuProd && modifie" class="help is-warning">
+            Modifications non enregistrées : la prod affiche la version enregistrée.
+          </p>
         </div>
 
         <EtatBandeau
