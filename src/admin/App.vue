@@ -1,46 +1,35 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import config from "@/core/config.js";
+import { checkAuth, login } from "@/core/auth.js";
 import { useDonneesStore } from "@/stores/donnees.js";
 import { useMediasStore } from "@/stores/medias.js";
 import { ouvrirLiaison, useLiaison } from "@/composables/liaison.js";
 import NavBar from "@/components/ui/NavBar.vue";
 import MessagesFlottants from "@/components/ui/MessagesFlottants.vue";
 
-const CLE_AUTH = "auth";
-
 const donnees = useDonneesStore();
 const medias = useMediasStore();
 const { etatLiaison } = useLiaison();
 
-const saisie = ref("");
-const autorise = ref(estAutorise());
+const autorise = ref(false);
+const verifie = ref(false);
+const erreurAuth = ref("");
 
 /**
- * Code d'accès partagé, mémorisé sur l'appareil.
+ * Connexion par SSO WordPress, réservée aux administrateurs.
  *
- * Ce n'est pas un mécanisme de sécurité — il est vérifié côté navigateur — mais
- * un garde-fou contre les modifications accidentelles. La protection réelle des
- * données repose sur les règles d'accès du service de données.
+ * Ce n'est pas un mécanisme de sécurité (vérifié côté navigateur) : la
+ * protection réelle des données repose sur les règles d'accès du service de
+ * données.
  */
-function estAutorise() {
-  if (!config.password) return true;
+async function verifierAcces() {
   try {
-    return localStorage.getItem(CLE_AUTH) === config.password;
-  } catch {
-    return false; // navigation privée, stockage bloqué
+    autorise.value = !!(await checkAuth());
+  } catch (e) {
+    erreurAuth.value = e.message;
   }
-}
-
-function verifierCode() {
-  if (saisie.value !== config.password) return;
-  try {
-    localStorage.setItem(CLE_AUTH, saisie.value);
-  } catch {
-    /* stockage indisponible : l'accès vaudra pour cette session */
-  }
-  autorise.value = true;
-  demarrer();
+  verifie.value = true;
+  if (autorise.value) demarrer();
 }
 
 async function demarrer() {
@@ -55,9 +44,7 @@ async function demarrer() {
   }
 }
 
-onMounted(() => {
-  if (autorise.value) demarrer();
-});
+onMounted(verifierAcces);
 
 const liaisonRompue = computed(
   () => etatLiaison.value === "deconnectee" || etatLiaison.value === "erreur"
@@ -76,25 +63,14 @@ const liaisonRompue = computed(
 <template>
   <div class="application">
     <!-- Écran de connexion -->
-    <form v-if="!autorise" class="connexion" @submit.prevent>
+    <div v-if="verifie && !autorise" class="connexion">
       <img src="/logo.svg" alt="" width="64" height="64" />
       <h1 class="title is-5 mt-4">Écrans</h1>
-      <div class="field">
-        <div class="control">
-          <input
-            v-model="saisie"
-            class="input"
-            type="password"
-            placeholder="Code d'accès"
-            autofocus
-            @input="verifierCode"
-          />
-        </div>
-      </div>
-      <p class="help">Entrez le code de la boîte à clés de la réserve.</p>
-    </form>
+      <p v-if="erreurAuth" class="has-text-danger mb-3">{{ erreurAuth }}</p>
+      <button class="button is-link" @click="login">Se connecter avec Coworking Metz</button>
+    </div>
 
-    <div v-else class="administration">
+    <div v-else-if="autorise" class="administration">
       <NavBar />
 
       <p v-if="liaisonRompue" class="bandeau-liaison">

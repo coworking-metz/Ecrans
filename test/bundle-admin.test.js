@@ -13,7 +13,6 @@
 import { describe, expect, test, beforeAll } from "vitest";
 import {
   bundleConstruit,
-  codeDacces,
   importerBundle,
   patienter,
   preparerEnvironnement,
@@ -27,10 +26,8 @@ describe.skipIf(!bundleConstruit)("bundle — administration", () => {
     erreurs = preparerEnvironnement();
   });
 
-  test("l'administration monte, code d'accès mémorisé", async () => {
-    const code = codeDacces();
-    expect(code, "VITE_APP_PASSWORD doit être lisible pour ce test").toBeTruthy();
-    localStorage.setItem("auth", code);
+  test("l'administration monte, session SSO active", async () => {
+    localStorage.setItem("auth_wp", JSON.stringify({ token: "t", expires: Date.now() + 3600e3, name: "Test" }));
     document.body.innerHTML = '<div id="app"></div>';
 
     await importerBundle("index.js");

@@ -16,8 +16,9 @@ export const config = {
   supabaseUrl: env.VITE_APP_SUPABASE_URL || "https://lvsbvjweppdlhmjuqqvt.supabase.co",
   supabaseKey: env.VITE_APP_SUPABASE_KEY || "",
 
-  /** Code d'accès partagé à l'administration. Vide = pas de protection. */
-  password: env.VITE_APP_PASSWORD || "",
+  /** SSO : le WordPress du coworking (plugin WP OAuth Server, flow implicit). */
+  wpUrl: env.VITE_APP_WP_URL || "https://www.coworking-metz.fr",
+  oauthClientId: env.VITE_APP_OAUTH_CLIENT_ID || "sPc3emNadubEC0U073yC9I2vYdCe3WjkkOjuxhas",
 
   /** Proxy d'images : redimensionnement et anti-cache. */
   imagesBase: env.VITE_APP_IMAGES_BASE || "https://images.coworking-metz.fr/supabase/",

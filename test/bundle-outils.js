@@ -19,17 +19,6 @@ export function importerBundle(nom) {
   return import(pathToFileURL(path.join(DIST, "assets", nom)).href);
 }
 
-/** Le code d'accès tel qu'il est compilé dans le bundle. */
-export function codeDacces() {
-  const fichier = path.resolve(import.meta.dirname, "..", ".env");
-  if (!fs.existsSync(fichier)) return null;
-  const ligne = fs
-    .readFileSync(fichier, "utf8")
-    .split(/\r?\n/)
-    .find((l) => l.startsWith("VITE_APP_PASSWORD="));
-  return ligne ? ligne.slice("VITE_APP_PASSWORD=".length).trim() : null;
-}
-
 /**
  * Coupe le réseau et capture ce que Vue écrit dans la console.
  * @returns {string[]} les messages d'erreur, alimentés au fil du test

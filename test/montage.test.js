@@ -52,7 +52,7 @@ beforeEach(() => {
 });
 
 describe("administration", () => {
-  test("App se monte — code d'accès non saisi", async () => {
+  test("App se monte — non connecté", async () => {
     localStorage.clear();
     const App = (await import("@/admin/App.vue")).default;
     const router = routeurDeTest();
@@ -71,9 +71,8 @@ describe("administration", () => {
    * La branche authentifiée est celle que voit tout le monde en production —
    * et c'est elle qui plantait, faute d'être couverte.
    */
-  test("App se monte — code d'accès déjà mémorisé", async () => {
-    const config = (await import("@/core/config.js")).default;
-    localStorage.setItem("auth", config.password);
+  test("App se monte — session SSO active", async () => {
+    localStorage.setItem("auth_wp", JSON.stringify({ token: "t", expires: Date.now() + 3600e3, name: "Test" }));
 
     const App = (await import("@/admin/App.vue")).default;
     const router = routeurDeTest();
