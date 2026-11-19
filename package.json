@@ -1,25 +1,29 @@
 {
   "name": "coworking-ecrans-admin",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "npm run test:metier && npm run build && npm run test:montage",
+    "test:metier": "node --test test/*.test.mjs",
+    "test:montage": "vitest run",
+    "rapport:horaires": "node tools/rapport-horaires.mjs"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.38.0",
     "bulma": "^0.9.4",
-    "mitt": "^3.0.1",
-    "pinia": "^2.1.6",
+    "pinia": "^4.0.3",
     "quill": "^1.3.7",
-    "vue": "^3.3.4",
-    "vue-router": "^4.2.5",
-    "vuedraggable": "^4.1.0"
+    "vue": "^3.5.42",
+    "vue-router": "^5.3.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.2.3",
-    "vite": "^4.4.5"
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/test-utils": "^2.5.0",
+    "jsdom": "^30.0.1",
+    "vite": "^8.2.2",
+    "vitest": "^5.0.0"
   }
 }

@@ -1,0 +1,238 @@
+﻿/*
+ * Rendu d'un slide — partagé par le lecteur et par l'aperçu de l'administration.
+ *
+ * Règle d'or : ce fichier est la seule définition du rendu. Toute divergence
+ * entre l'aperçu et la diffusion réelle est un défaut.
+ *
+ * Les tailles sont exprimées en unités de CONTENEUR (cqw/cqh) et non de fenêtre.
+ * Les valeurs numériques sont celles de la v1 (qui utilisait vw/vh), si bien que
+ * le rendu plein écran est identique — `.rendu` occupe alors toute la fenêtre —
+ * mais l'aperçu de l'administration devient fidèle sans passer par une iframe :
+ * un titre en 4cqw fait 4 % de la largeur de l'aperçu, comme il fait 4 % de la
+ * largeur du téléviseur.
+ *
+ * Les quelques marges en `rem` sont volontairement conservées telles quelles :
+ * elles étaient absolues en v1, et les contenus existants en dépendent.
+ */
+
+@font-face {
+  font-family: "evelethclean_thin";
+  src: url("/fonts/evelethcleanthin-webfont.woff2") format("woff2"),
+       url("/fonts/evelethcleanthin-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "evelethclean_regular";
+  src: url("/fonts/evelethclean-webfont.woff2") format("woff2"),
+       url("/fonts/evelethclean-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Enveloppe d'un slide : porte la barre de progression et sert de cible aux
+   transitions. Racine unique, exigée par <Transition>. */
+.rendu-hote {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.rendu {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  /* Référence des unités cqw/cqh utilisées ci-dessous. */
+  container-type: size;
+}
+
+.rendu img[src=""],
+.rendu img:not([src]) {
+  display: none !important;
+}
+
+/* --- Fond commun aux types « composition » et « image » -------------------- */
+
+.rendu-fond {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- Composition ---------------------------------------------------------- */
+
+.rendu-contenu {
+  padding: 10cqh;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  max-width: 60cqw;
+  display: grid;
+  place-items: center;
+  align-content: center;
+}
+
+.rendu-figure {
+  width: auto;
+  height: 15cqh;
+  aspect-ratio: 1;
+}
+
+.rendu-emoji {
+  text-align: center;
+  font-size: 10cqh;
+  line-height: 1;
+}
+
+.rendu-image-principale > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.rendu-texte {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-variant: small-caps;
+}
+
+/* Dès qu'un visuel central est présent, le texte reprend un flux normal. */
+.rendu-contenu:has(.rendu-figure) .rendu-texte {
+  display: initial;
+}
+
+.rendu-texte h1 {
+  font-family: "evelethclean_regular", "Arial Black", sans-serif;
+  font-size: 4cqw;
+  line-height: 1;
+  margin: 0;
+}
+
+.rendu-texte h1:empty {
+  display: none !important;
+}
+
+.rendu-texte h1:empty + .rendu-corps {
+  margin: 0;
+}
+
+.rendu-corps {
+  margin-top: 1.8rem;
+  font-family: "evelethclean_thin", Arial, sans-serif;
+  font-size: 2.1cqw;
+  line-height: 1.1;
+}
+
+.rendu-corps p {
+  margin: 0;
+}
+
+.rendu-corps > *:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+.rendu-corps strong {
+  font-family: "evelethclean_regular", "Arial Black", sans-serif;
+  color: inherit;
+}
+
+/* Classes produites par l'éditeur de texte enrichi. */
+.rendu-corps .ql-size-small { font-size: 1.5cqw; }
+.rendu-corps .ql-size-large { font-size: 2.8cqw; }
+.rendu-corps .ql-size-huge  { font-size: 3.2cqw; }
+.rendu-corps .ql-font-monospace { font-family: monospace; }
+.rendu-corps .ql-font-sans-serif { font-family: sans-serif; }
+.rendu-corps .ql-font-serif { font-family: serif; }
+.rendu-corps .ql-align-center { text-align: center; }
+.rendu-corps .ql-align-right { text-align: right; }
+.rendu-corps .ql-align-justify { text-align: justify; }
+
+/* --- QR code -------------------------------------------------------------- */
+
+.rendu-qr {
+  position: absolute;
+  bottom: 2cqw;
+  right: 2cqw;
+  width: 10cqw;
+  height: 10cqw;
+  border: 0.5cqw solid #fff;
+  z-index: 2;
+  background: #fff;
+}
+
+.rendu-qr img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* --- Vidéo et page web ---------------------------------------------------- */
+
+.rendu-video,
+.rendu-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.rendu-video {
+  object-fit: cover;
+  background: #000;
+}
+
+/* --- Barre de progression ------------------------------------------------- */
+
+.rendu-progression {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 1cqh;
+  width: 0;
+  background-color: #fff;
+  border-top: 1px solid #000;
+  border-right: 1px solid #000;
+  border-top-right-radius: 0.5cqh;
+  border-bottom-right-radius: 0.5cqh;
+  z-index: 10;
+}
+
+.rendu-progression.anime {
+  animation: rendu-progresse linear forwards;
+}
+
+@keyframes rendu-progresse {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+/* --- Écran d'attente : aucun slide éligible ------------------------------- */
+
+.rendu-attente {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: #111;
+  color: #888;
+  font-family: "evelethclean_thin", Arial, sans-serif;
+  text-align: center;
+  gap: 1rem;
+}
+
+.rendu-attente .heure {
+  font-size: 8cqw;
+  color: #ddd;
+}
+
+.rendu-attente .message {
+  font-size: 1.5cqw;
+}

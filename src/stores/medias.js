@@ -1,54 +1,74 @@
+/** Bibliothèque de médias : liste, dépôt, suppression. */
+
 import { defineStore } from "pinia";
-import { createClient } from "@supabase/supabase-js";
-import supabase from "@/supabase";
+import { medias as apiMedias, FORMATS_ACCEPTES, FORMATS_MINIATURE } from "@/core/api.js";
+import { fabriquerMiniature } from "@/core/media.js";
 
 export const useMediasStore = defineStore("medias", {
   state: () => ({
-    medias: null,
+    medias: [],
+    chargement: false,
+    envoiEnCours: false,
   }),
+
+  getters: {
+    parUrl: (state) => (url) => state.medias.find((m) => m.url === url) || null,
+    rechercher: (state) => (terme) => {
+      const q = (terme || "").trim().toLowerCase();
+      return q ? state.medias.filter((m) => m.index.includes(q)) : state.medias;
+    },
+  },
+
   actions: {
-    async prepare(file) {
-      if (!file) return;
-      if (file.name.substr(0, 1) == ".") return;
-      const { data } = supabase.storage
-        .from("medias")
-        .getPublicUrl(`medias/${file.name}`);
-
-      const url = data.publicUrl;
-      const media = {
-        file: file,
-        url: url,
-        thumbnail: url.replace("medias/medias/", "medias/thumbnails/"),
-      };
-      media.index = JSON.stringify(media);
-      return media;
+    async charger() {
+      this.chargement = true;
+      try {
+        this.medias = await apiMedias.list();
+      } finally {
+        this.chargement = false;
+      }
     },
-    fetchMedia(id) {
-      return this.medias.find((media) => media.file.id == id);
-    },
-    async fetchMedias() {
-      const { data, error } = await supabase.storage
-        .from("medias")
-        .list("medias", {
-          // limit: 100,
-          // offset: 0,
-          sortBy: { column: "name", order: "asc" },
-        });
 
-      if (!error) {
-        const files = data;
+    /**
+     * Dépose des fichiers et génère leurs miniatures.
+     * @returns {{deposes: string[], refuses: string[], erreurs: Error[]}}
+     */
+    async deposer(fichiers) {
+      const refuses = fichiers.filter((f) => !FORMATS_ACCEPTES.includes(f.type)).map((f) => f.name);
+      const acceptes = fichiers.filter((f) => FORMATS_ACCEPTES.includes(f.type));
+      const deposes = [];
+      const erreurs = [];
 
-        const medias = [];
-        for (let file of files) {
-          const media = await this.prepare(file);
-          if (media) {
-            medias.push(media);
+      this.envoiEnCours = true;
+      try {
+        for (const fichier of acceptes) {
+          try {
+            await apiMedias.upload(`medias/${fichier.name}`, fichier, { upsert: true });
+            if (FORMATS_MINIATURE.includes(fichier.type)) {
+              try {
+                const miniature = await fabriquerMiniature(fichier);
+                await apiMedias.upload(`thumbnails/${fichier.name}`, miniature, { upsert: true });
+              } catch (e) {
+                // Une miniature manquante n'est pas bloquante : l'original s'affiche.
+                console.warn("[médias] miniature non générée pour", fichier.name, e);
+              }
+            }
+            deposes.push(fichier.name);
+          } catch (e) {
+            erreurs.push(e);
           }
         }
-        this.medias = medias.sort((a, b) => {
-          return new Date(b.lastModified) - new Date(a.lastModified);
-        });
+        if (deposes.length) await this.charger();
+      } finally {
+        this.envoiEnCours = false;
       }
+
+      return { deposes, refuses, erreurs };
+    },
+
+    async supprimer(nom) {
+      await apiMedias.remove([nom]);
+      await this.charger();
     },
   },
 });

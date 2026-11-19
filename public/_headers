@@ -1,0 +1,15 @@
+# Les pages portent les numéros de version des assets : elles ne doivent jamais
+# être mises en cache. Les assets, eux, sont versionnés par ?v=<hash>.
+#
+# L'ordre compte : sur Cloudflare Pages, quand plusieurs règles correspondent,
+# c'est la dernière qui l'emporte pour un même en-tête. La règle du manifeste
+# doit donc rester APRÈS celle de /assets/*.
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/manifest.json
+  Cache-Control: no-store
+/*.html
+  Cache-Control: no-store
+/
+  Cache-Control: no-store
