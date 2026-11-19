@@ -8,6 +8,7 @@ import { slides as apiSlides, liens as apiLiens } from "@/core/api.js";
 import { computeSlideStateGlobal } from "@/core/state.js";
 import { TYPES, metaParDefaut, nettoyerEmoji } from "@/core/slide-types.js";
 import { formatDateHeure, versChampDateHeure, depuisChampDateHeure } from "@/core/dates.js";
+import { urlLecteur } from "@/core/media.js";
 
 import SlideRender from "@/components/slides/SlideRender.vue";
 import EditeurTexte from "@/components/slides/EditeurTexte.vue";
@@ -169,7 +170,7 @@ onBeforeRouteLeave(() => {
       <RouterLink class="button is-small" to="/slides">← Tous les slides</RouterLink>
       <a
         class="button is-small"
-        :href="`/visionner/slide/${source.id}`"
+        :href="urlLecteur({ slideId: source.id })"
         target="_blank"
         rel="noreferrer"
       >
