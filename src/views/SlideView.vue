@@ -10,7 +10,6 @@ import { TYPES, metaParDefaut, nettoyerEmoji } from "@/core/slide-types.js";
 import { formatDateHeure, versChampDateHeure, depuisChampDateHeure } from "@/core/dates.js";
 import { urlLecteur } from "@/core/media.js";
 
-import SlideRender from "@/components/slides/SlideRender.vue";
 import EditeurTexte from "@/components/slides/EditeurTexte.vue";
 import EditeurHoraires from "@/components/horaires/EditeurHoraires.vue";
 import SelecteurMedia from "@/components/medias/SelecteurMedia.vue";
@@ -27,9 +26,8 @@ const brouillon = reactive({ meta: {} });
 const ecransIds = ref([]);
 const modifie = ref(false);
 
-// Aperçu de production : la vraie visionneuse, dans une iframe 1920×1080 mise
+// Aperçu : la vraie visionneuse de production, dans une iframe 1920×1080 mise
 // à l'échelle. Elle lit le slide enregistré, pas le brouillon.
-const apercuProd = ref(false);
 const rechargeProd = ref(0);
 const echelleProd = ref(0.2);
 const zoneApercu = ref(null);
@@ -435,31 +433,20 @@ onBeforeRouteLeave(() => {
           <div class="tv">
             <div ref="zoneApercu" class="tv-ecran">
               <iframe
-                v-if="apercuProd"
                 :key="rechargeProd"
                 class="apercu-prod"
                 :src="urlLecteur({ slideId: source.id })"
                 :style="{ transform: `scale(${echelleProd})` }"
                 title="Aperçu de production"
               ></iframe>
-              <!-- Le même rendu que le lecteur : aucune divergence possible. -->
-              <SlideRender
-                v-else
-                :key="brouillon.type"
-                :slide="{ ...brouillon, id: source.id }"
-                :largeur-image="800"
-              />
             </div>
           </div>
           <div class="buttons are-small mt-2">
-            <button type="button" class="button is-small" @click="apercuProd = !apercuProd; rechargeProd++">
-              {{ apercuProd ? "Aperçu en direct" : "Aperçu prod" }}
-            </button>
-            <button v-if="apercuProd" type="button" class="button is-small" @click="rechargeProd++">
+            <button type="button" class="button is-small" @click="rechargeProd++">
               Recharger
             </button>
           </div>
-          <p v-if="apercuProd && modifie" class="help is-warning">
+          <p v-if="modifie" class="help is-warning">
             Modifications non enregistrées : la prod affiche la version enregistrée.
           </p>
         </div>
