@@ -50,7 +50,12 @@ export async function checkAuth() {
     const isAdmin = (me.user_roles || []).includes("administrator") || me.capabilities?.manage_options;
     if (!isAdmin) throw new Error("Accès réservé aux administrateurs");
     const expires = Date.now() + (parseInt(hash.get("expires_in")) || 3600) * 1000;
-    localStorage.setItem(KEY, JSON.stringify({ token, expires, name: me.display_name }));
+    localStorage.setItem(KEY, JSON.stringify({ token, expires, name: me.display_name, avatar: me.avatar_url || "" }));
   }
+  return load();
+}
+
+/** Utilisateur connecté (session mémorisée) : { name, avatar } ou null. */
+export function utilisateur() {
   return load();
 }
